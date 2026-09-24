@@ -6,6 +6,16 @@ A portfolio concept built around an interactive 3D filing cabinet: open a drawer
 
 Planning and design exploration. No website implementation yet.
 
+## Planning documents
+
+- [Concept and scope](docs/concept.md): established direction, visitor goals, content, and open questions.
+- [Experience and visual brief](docs/experience.md): proposed scenes, reading layout, navigation, and accessibility behavior.
+- [Phases and waves](docs/roadmap.md): deliverables, dependencies, and completion criteria.
+- [Decision log](docs/decisions.md): confirmed decisions and proposals still being evaluated.
+- [Development journal](docs/devlog.md): the process, experiments, and lessons as the project develops.
+
+These documents distinguish confirmed direction from proposals. The visual design and implementation stack have not been selected.
+
 ## Direction
 
 - A personal archive with folders, page turns, and Polaroid-style project photographs.
