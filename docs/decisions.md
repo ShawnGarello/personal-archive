@@ -40,6 +40,24 @@ Keep a local copy of the resume in the ignored `private/` tree and preserve the 
 
 This supersedes earlier proposals for a resume download. The current scope contains no public resume PDF. Any separate public version would require explicit authorization.
 
+## D007: Camera storyboard first
+
+Status: confirmed by the owner.
+
+The owner agreed to a click-triggered main sequence and prioritizing camera choreography before detailed models. The folder moves without a visible hand; the camera follows it outward and settles for reading.
+
+## D008: Isolated reading background
+
+Status: confirmed by the owner.
+
+The folder and pages must be presented against white/off-white, with no cabinet visible behind them. Exact transition technique and supporting-surface treatment remain open.
+
+## D009: Human commit attribution
+
+Status: explicitly required by the owner for Claude; shared Git guidance applies the same convention to all assistants.
+
+Claude must not be an author or co-author. Use the configured human identity and exclude AI attribution trailers.
+
 ## Proposals awaiting resolution
 
 | Proposal | Reason to investigate | Where to resolve |

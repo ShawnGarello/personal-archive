@@ -10,7 +10,7 @@ Proposed visual interpretation: neatly arranged folders, consistent label placem
 
 Recruiters should be able to scan the work and background quickly, while fellow developers and UI/UX enthusiasts can explore the details and making-of material. Both paths belong to the same portfolio.
 
-The cabinet is the dominant object in the entrance composition. In reading mode, the open folder becomes dominant and the environment recedes. Exact materials, lighting, palette, typography, and the surrounding space remain undecided.
+The cabinet is the dominant object in the entrance composition. The owner has confirmed that the reading view isolates the folder and pages against a clean white/off-white background, with no cabinet visible behind them. As the camera follows the folder outward, the cabinet must leave the composition. This visual endpoint is decided; how the framing and transition achieve it remains to be storyboarded. Exact materials, lighting, accent palette, typography, and the surrounding entrance space remain undecided.
 
 Explore the cabinet, folder, paper, photograph borders, tabs, and handwriting as a coherent family. Textures must survive close inspection without making text harder to read. Real project images supply the content; decorative photographs must not stand in for evidence of work.
 
@@ -18,15 +18,15 @@ Explore the cabinet, folder, paper, photograph borders, tabs, and handwriting as
 
 | Scene | What the visitor sees and does | Transition or result |
 | --- | --- | --- |
-| Arrival | Cabinet, owner's approved name and role, clear opening action, work/contact shortcuts | Content access is available while 3D prepares |
+| Arrival | Cabinet, owner's approved name and role, clear opening action, work/contact shortcuts | A subtle settling movement is optional; the main sequence waits for a deliberate click |
 | Open drawer | Activate the handle or its equivalent button | Drawer movement and camera approach overlap |
-| Select folder | A clearly labeled personal folder inside the drawer | Activate it to lift the folder toward the reading position |
-| Open folder | Folder settles on a surface and its cover opens | Camera settles; introduction and navigation become readable |
+| Select folder | A clearly labeled personal folder rises without a visible hand | Camera follows the folder outward as the cabinet leaves the composition; whether a second activation is needed remains open |
+| Open folder | Folder settles into the reading position and its cover opens | Camera settles on the folder against white/off-white; introduction and navigation become readable |
 | Browse pages | Use tabs or page controls to explore the portfolio | Short page transitions preserve context |
 | Inspect project | Activate a project photograph or title | Read a complete project view and enlarge media |
 | Return | Close the project view or choose to return to the cabinet | Preserve the page location; avoid replaying the entire entrance |
 
-The resting surface for the folder is an open design choice. A pull-out shelf or nearby writing surface is a possibility, not a requirement. Decide this before detailed modeling so the object's movement has a coherent destination.
+Whether the folder rests on an implied pale surface or appears suspended is an open design choice. Earlier shelf and desk proposals are optional staging ideas, not requirements. Any supporting surface must preserve the clean reading background, and the cabinet must be out of view. Resolve the object's destination in the camera storyboard before detailed modeling.
 
 ## Reading layout
 

@@ -11,8 +11,8 @@ Purpose: establish what the site communicates, contains, and looks like before i
 | Wave | Deliverable | Completion criteria |
 | --- | --- | --- |
 | 0A: Purpose and content | Audience, owner positioning, content inventory, release scope | Primary audience and intended visitor action are clear; initial projects are identified |
-| 0B: Visual direction | Reference board and rough cabinet, drawer, and reading compositions | Materials, lighting, typography direction, and desktop/mobile hierarchy form a coherent direction |
-| 0C: Experience | Storyboard, navigation, fallback behavior, initial constraints | The full journey is understandable, including direct content access and reduced motion |
+| 0B: Camera and experience | Camera storyboard, object movement, navigation, fallback behavior | Click-triggered movement leads continuously to an isolated pale reading view; cabinet leaves the composition |
+| 0C: Visual direction | Reference board and rough cabinet, drawer, and reading compositions | Materials, lighting, typography direction, and desktop/mobile hierarchy support the established storyboard |
 
 Current state: initial written drafts exist. The owner identified software engineering recruiters, fellow developers, and UI/UX enthusiasts as audiences, while welcoming everyone. A precise, curated case-file feeling is confirmed. Content selection and specific visual compositions remain open. A written concept alone does not complete visual design.
 
