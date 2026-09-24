@@ -7,3 +7,8 @@ build/
 *.log
 .DS_Store
 Thumbs.db
+
+# Private source documents and all derived notes, text, and previews.
+/private/
+# Also exclude resume PDFs if accidentally copied outside the private folder.
+*[Rr][Ee][Ss][Uu][Mm][Ee]*.[Pp][Dd][Ff]

@@ -18,7 +18,7 @@ Explore the cabinet, folder, paper, photograph borders, tabs, and handwriting as
 
 | Scene | What the visitor sees and does | Transition or result |
 | --- | --- | --- |
-| Arrival | Cabinet, owner's name and role, clear opening action, resume/contact shortcuts | Content access is available while 3D prepares |
+| Arrival | Cabinet, owner's approved name and role, clear opening action, work/contact shortcuts | Content access is available while 3D prepares |
 | Open drawer | Activate the handle or its equivalent button | Drawer movement and camera approach overlap |
 | Select folder | A clearly labeled personal folder inside the drawer | Activate it to lift the folder toward the reading position |
 | Open folder | Folder settles on a surface and its cover opens | Camera settles; introduction and navigation become readable |
@@ -34,7 +34,7 @@ Proposed organization:
 
 - Introduction: a concise bio and one meaningful portrait or artifact, if available.
 - Projects: selected work with image previews, short captions, and direct access to details.
-- Experience: a readable summary with a resume download.
+- Experience: an owner-approved readable summary. No private source document or resume download.
 - Contact: clear public contact links.
 
 Desktop may use an open spread if actual content fits comfortably. Mobile should use one readable page at a time. The scene must adapt to the reading layout rather than shrinking desktop text to fit the phone.
@@ -77,3 +77,5 @@ Static environment details may suit baked lighting. Moving drawers and pages nee
 ## Next design artifacts
 
 Prepare a small reference board and rough compositions for the cabinet view, drawer view, and reading view, including a phone version. Compare visual directions before selecting final colors, fonts, or detailed models. The next step is visual exploration, not a production interface.
+
+Follow [the exploration plan](exploration.md). Use fictional placeholder content in public or externally generated concept images; do not include private resume text, screenshots, or contact details.

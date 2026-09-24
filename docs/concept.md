@@ -4,7 +4,7 @@ Status: working draft. This records the conversation so far; proposals are not f
 
 ## Established direction
 
-Personal Archive is a portfolio website presented as a physical archive. A visitor opens a cabinet, moves closer to a drawer, selects a personal folder, and explores its pages. The folder contains information about the owner, a resume, projects, and images presented in Polaroid-style frames.
+Personal Archive is a portfolio website presented as a physical archive. A visitor opens a cabinet, moves closer to a drawer, selects a personal folder, and explores its pages. The folder contains approved information about the owner, projects, and images presented in Polaroid-style frames. Private source documents are reference material only and are not part of the public experience.
 
 The owner has chosen a precise, curated personal archive with the feeling of a case file. Henry Heffernan's portfolio is a reference for 3D presentation and camera transitions, while this project will develop its own setting, visual identity, and interactions.
 
@@ -20,13 +20,13 @@ Proposed visitor outcomes:
 
 - Understand who the owner is and what kind of work they do.
 - Inspect a project and understand the owner's contribution.
-- Find a resume and a way to make contact.
+- Understand the owner's professional background and find an approved public contact channel.
 - Explore the archive for its personality and craft.
 - Find the public repository and learn how the experience was made.
 
 ## Proposed first release
 
-One cabinet and one featured personal folder provide a complete path through the portfolio. The folder contains an introduction, selected projects, experience/resume, and contact information. The page metaphor supports the content without forcing visitors to browse everything in order.
+One cabinet and one featured personal folder provide a complete path through the portfolio. The folder contains an introduction, selected projects, approved experience summaries, and approved public contact information. The page metaphor supports the content without forcing visitors to browse everything in order. A public resume download is not part of the current scope.
 
 The number and order of projects depend on the real content inventory. Empty decorative folders should not imply that unavailable content can be opened.
 
@@ -40,16 +40,18 @@ Proposed exclusions for the first release: a full navigable room, an OS simulati
 | Projects | Title, summary, contribution, process, outcome, links | Not selected |
 | Project media | Screenshots, photographs or demos, captions and alt text | Not supplied |
 | Experience | Relevant work, education, or other background | Not supplied |
-| Resume | A document suitable for public download | Not supplied |
+| Resume | Private reference only; no public PDF or download | Kept outside tracked content |
 | Contact | Public contact channel and selected profile links | Not supplied |
 | Making-of | Repository link, milestone notes, selected experiments | Repository available |
 
 Do not invent results, testimonials, employment details, or project metrics. Keep unpublished personal material out of the public repository.
 
+Reviewing a private resume does not authorize publishing its details. Draft content selections and summaries privately; obtain the owner's approval before transferring any derived content into tracked documents or website content. An independently prepared public resume would require explicit authorization; the private source must never be published.
+
 ## Proposed success criteria
 
 - A first-time visitor can identify the owner and reach a featured project without guessing how to operate the scene.
-- A visitor can access resume and contact information without completing the entrance animation.
+- A visitor can access approved background and contact information without completing the entrance animation.
 - The folder remains readable on a phone and usable with a keyboard.
 - Portfolio content is available when motion is reduced or 3D rendering is unavailable.
 - A developer can follow the documented setup and understand the major implementation decisions.

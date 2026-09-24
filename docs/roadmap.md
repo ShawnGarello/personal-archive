@@ -34,7 +34,7 @@ Depends on the successful interaction prototype. Purpose: make the full content 
 
 | Wave | Deliverable | Completion criteria |
 | --- | --- | --- |
-| 2A: Content structure | Introduction, projects, experience/resume, contact | Real supplied content appears in a readable structure; no fabricated achievements |
+| 2A: Content structure | Introduction, projects, approved experience summaries, public contact | Content is approved for publication; no private source documents or fabricated achievements |
 | 2B: Navigation and media | Tabs, page controls, project URLs, enlarged images | Direct entry and browser Back work; returning preserves reading context and focus |
 | 2C: Complete access paths | Keyboard, phone layouts, fallback content | Core information can be reached through every supported access path |
 

@@ -10,11 +10,14 @@ Planning and design exploration. No website implementation yet.
 
 - [Concept and scope](docs/concept.md): established direction, visitor goals, content, and open questions.
 - [Experience and visual brief](docs/experience.md): proposed scenes, reading layout, navigation, and accessibility behavior.
+- [Visual exploration](docs/exploration.md): directions to compare and how to choose the scene composition.
 - [Phases and waves](docs/roadmap.md): deliverables, dependencies, and completion criteria.
 - [Decision log](docs/decisions.md): confirmed decisions and proposals still being evaluated.
 - [Development journal](docs/devlog.md): the process, experiments, and lessons as the project develops.
 
 These documents distinguish confirmed direction from proposals. The visual design and implementation stack have not been selected.
+
+Private source documents and their derivatives stay in the ignored local `private/` directory. They are excluded from the public project and must never be served or included in deployment artifacts. See [project guidance](AGENTS.md) for handling rules.
 
 ## Direction
 
