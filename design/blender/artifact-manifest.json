@@ -1,0 +1,65 @@
+{
+  "storage": "Local only, ignored artifacts/archive-motion-draft; regenerate with design/blender scripts.",
+  "files": [
+    {
+      "path": "archive-motion-draft.blend",
+      "bytes": 184025,
+      "sha256": "944581e0d9feb2307d58fccb5bbfe039fc1fc01d8951fb088c025d97780bc795"
+    },
+    {
+      "path": "archive-motion-preview.mp4",
+      "bytes": 432959,
+      "sha256": "af74f38b5681d2eda86dafbaeb920426fadf42a4c5d3df659a43be49918fdfb7"
+    },
+    {
+      "path": "representative-frames.jpg",
+      "bytes": 86321,
+      "sha256": "eb777a5545208f6be6ea89782a7c39fada1dc78a84f9bf6cdb712c877ecc5c0a"
+    },
+    {
+      "path": "video-contact-sheet.jpg",
+      "bytes": 248641,
+      "sha256": "27158258e2af95939e854ffa75d3e8db96b293bc28cce57d45856fcc1d8ff419"
+    },
+    {
+      "path": "checks.json",
+      "bytes": 346,
+      "sha256": "91b9acf6083c66713c047ba0ac71462c4cd870e8148b443d84170fea5eed8460"
+    },
+    {
+      "path": "stills/0001.png",
+      "bytes": 633398,
+      "sha256": "b02300a0c808760e1e5b8ed665018c4aabbfc34597a296a60013544ced42ddec"
+    },
+    {
+      "path": "stills/0066.png",
+      "bytes": 671540,
+      "sha256": "299d5c083f0a1055b83073ca9a21e196db459c3ef2482ad52039c85c51315926"
+    },
+    {
+      "path": "stills/0094.png",
+      "bytes": 688552,
+      "sha256": "23fd363797d1bd9985d9024d17547b3a2744a8fa2eaa64b2fd27d248191bdf59"
+    },
+    {
+      "path": "stills/0130.png",
+      "bytes": 652597,
+      "sha256": "80b20f9a1fa064cd9d982556dda6a4a0f91a0d3d28b2cdb24bd50a084ab85f19"
+    },
+    {
+      "path": "stills/0158.png",
+      "bytes": 620685,
+      "sha256": "840eb4b36075e48520eeae3c119792deb40bd5141b633c9b51b038be48b199e5"
+    },
+    {
+      "path": "stills/0197.png",
+      "bytes": 581851,
+      "sha256": "1906af5a77009d0a17fee1c995dd3c1ec967f7e35646bc86b0213658f9c17572"
+    },
+    {
+      "path": "stills/0240.png",
+      "bytes": 581986,
+      "sha256": "f04fe64cd1817377b8f76df5197853cd0bc01d11fa5ce5b955c6bd1bc23abae1"
+    }
+  ]
+}

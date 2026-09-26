@@ -68,6 +68,16 @@ Claude must not be an author or co-author. Use the configured human identity and
 | Lightweight CI and focused interaction tests | Checks breakage without a large test-maintenance burden | Phase 1 foundation |
 | Editable 3D sources plus optimized web exports | Makes the modeling process learnable and reproducible | Asset workflow and licensing |
 
+## D010: First Blender motion study
+
+Date: 2026-09-26. Status: owner authorized the prototype; its specific design choices await review.
+
+Create an editable Blender study on `design/archive-blender-draft` in a separate worktree and scene. Preserve the original scene and stop after presenting the first motion draft. This is a scoped exception to the earlier prohibition on starting 3D work; website implementation and detailed production assets remain outside the assignment.
+
+The draft proposes one activation, a horizontal folder in a shallow upper drawer, a vertical lift followed by outward travel, and an opening cover that settles against an implied pale surface. It preserves the same folder, and camera framing removes the cabinet from the reading view. None of these proposed construction, timing or material choices supersedes the confirmed direction without owner review.
+
+Large `.blend` and render outputs remain in ignored local `artifacts/`; rebuilding scripts and review notes enter ordinary Git. No external asset storage or publication is introduced. See [draft notes](../design/blender/README.md) for timing, evidence, limitations and unresolved choices.
+
 ## Future entry format
 
 Record: decision, status, context, alternatives actually considered, reason, consequences, and evidence. Add dates when decisions are made. Avoid inventing retrospective experiments to justify a choice.

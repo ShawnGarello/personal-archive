@@ -12,6 +12,14 @@ During planning, the owner identified software engineering recruiters, fellow de
 
 Open work: select content and compare rough scene compositions that express this direction. The most important early technical experiment will be the transition from a moving 3D folder to readable portfolio pages.
 
+## First Blender motion draft — 2026-09-26
+
+The owner authorized a 3D design prototype to test the complete entrance. Blender MCP inspection established a default three-object scene in Blender 5.1.2. A separate `Archive_Motion_Draft` scene preserves those objects and adds an editable cabinet, telescoping upper drawer, continuous folder, opening cover, three paper layers, two synthetic image previews and a following camera.
+
+The draft is ten seconds at 24 fps. A one-second hold simulates waiting for activation. Drawer movement, folder lift, outward travel and cover opening lead to an isolated pale reading view. A raised waypoint keeps the folder above the drawer front until its back edge has cleared. Arrival framing and simplified rail geometry were corrected during rendered review. All 240 frames pass the recorded clearance and framing checks.
+
+Artifacts are local and ignored; scripts and [review notes](../design/blender/README.md) are committed on the dedicated branch. The supplied screenshot informed the miniature composition and lighting. No private directory or resume was accessed, and all text and image placeholders are fictional. Remaining choices include pacing, folder orientation, the implied supporting surface and final visual language. The next step is owner review of this first motion draft.
+
 ## Format for future milestones
 
 - Objective: what we wanted to learn or deliver.
