@@ -78,6 +78,14 @@ The draft proposes one activation, a horizontal folder in a shallow upper drawer
 
 Large `.blend` and render outputs remain in ignored local `artifacts/`; rebuilding scripts and review notes enter ordinary Git. No external asset storage or publication is introduced. See [draft notes](../design/blender/README.md) for timing, evidence, limitations and unresolved choices.
 
+## D011: Revised cabinet reference and upright extraction
+
+Date: 2026-09-27. Status: owner-directed iteration; exact motion and final appearance await review.
+
+The latest owner-supplied reference replaces the earlier green cabinet and steep arrival as the direction for this study. Use a tall, narrow neutral-metal cabinet, a centered modest downward view with the cabinet around half the image height, pale surroundings, and upright files with visible tabs. Extract one continuous portfolio file vertically before bringing it outward and rotating it for reading. Target four to five seconds from activation to reading, plus opening and final holds.
+
+Version 1 was preserved before making an independent V2 scene and versioned outputs. The V2 proposal reaches reading in 4.75 seconds, with a 0.75-second arrival and two-second reading hold. See [V2 review notes](../design/blender/README-v2.md) for render evidence, geometric checks and unresolved choices. This authorization remains limited to a 3D design iteration.
+
 ## Future entry format
 
 Record: decision, status, context, alternatives actually considered, reason, consequences, and evidence. Add dates when decisions are made. Avoid inventing retrospective experiments to justify a choice.

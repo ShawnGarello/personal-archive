@@ -20,6 +20,12 @@ The draft is ten seconds at 24 fps. A one-second hold simulates waiting for acti
 
 Artifacts are local and ignored; scripts and [review notes](../design/blender/README.md) are committed on the dedicated branch. The supplied screenshot informed the miniature composition and lighting. No private directory or resume was accessed, and all text and image placeholders are fictional. Remaining choices include pacing, folder orientation, the implied supporting surface and final visual language. The next step is owner review of this first motion draft.
 
+## Blender motion draft version 2 — 2026-09-27
+
+Preserved V1 source, video, stills and script snapshots, then cloned its scene for a new reference-directed iteration. Revised the cabinet to tall neutral metal, reduced its arrival framing to 50.6% of image height, introduced five neighboring upright files, and animated vertical extraction of the selected file followed by outward travel and rotation.
+
+The 960 × 600 preview lasts 7.5 seconds, including 4.75 seconds from activation to settled reading. Oriented-bounds checks cover all 180 frames, including neighbors, cover sweep and final cabinet/shadow exclusion. Inspected the encoded sequence through 90 decoded samples and representative stills. Corrected file-edge clearance, cover framing and the distant floor tone before delivery. An arrival comparison records the change from V1. See [review notes](../design/blender/README-v2.md); next step is owner review.
+
 ## Format for future milestones
 
 - Objective: what we wanted to learn or deliver.

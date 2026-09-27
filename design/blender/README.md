@@ -1,4 +1,10 @@
-# First editable archive motion draft
+# Archive motion drafts
+
+**Current iteration: [version 2 review notes](README-v2.md).** The owner supplied a new cabinet reference and requested upright filing folders, a distant frontal arrival and a faster entrance. Version 2 uses separate scripts ending in `_v2.py` and outputs in `artifacts/archive-motion-draft/v2/`.
+
+Version 1's `.blend`, MP4, stills, checks and script snapshots are preserved in `artifacts/archive-motion-draft/v1/`. The original unversioned outputs and the original scripts below also remain unchanged. Do not use the V1 render/package commands below for V2.
+
+## Version 1 record
 
 Status: **proposal for owner review**, 2026-09-26. This is a Blender design study. No website or production asset pipeline is included.
 
