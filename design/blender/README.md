@@ -1,6 +1,8 @@
 # Archive motion drafts
 
-**Current iteration: [version 2 review notes](README-v2.md).** The owner supplied a new cabinet reference and requested upright filing folders, a distant frontal arrival and a faster entrance. Version 2 uses separate scripts ending in `_v2.py` and outputs in `artifacts/archive-motion-draft/v2/`.
+**Current iteration: [version 3 review notes](README-v3.md).** V3 retains the liked V2 cabinet and extraction, adds portrait documents with an independent flexible top-edge page turn, and moves the reading camera closer. Scripts end in `_v3.py`; separate outputs live in `artifacts/archive-motion-draft/v3/`.
+
+[Version 2 review notes](README-v2.md), scripts and outputs remain preserved. Use each version's own rebuild commands.
 
 Version 1's `.blend`, MP4, stills, checks and script snapshots are preserved in `artifacts/archive-motion-draft/v1/`. The original unversioned outputs and the original scripts below also remain unchanged. Do not use the V1 render/package commands below for V2.
 

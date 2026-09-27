@@ -86,6 +86,14 @@ The latest owner-supplied reference replaces the earlier green cabinet and steep
 
 Version 1 was preserved before making an independent V2 scene and versioned outputs. The V2 proposal reaches reading in 4.75 seconds, with a 0.75-second arrival and two-second reading hold. See [V2 review notes](../design/blender/README-v2.md) for render evidence, geometric checks and unresolved choices. This authorization remains limited to a 3D design iteration.
 
+## D012: Separate cover and document hinges; content-focused reading
+
+Date: 2026-09-27. Status: owner-directed V3 study; exact construction and timing await review.
+
+Retain V2's liked cabinet composition, upright filing and extraction. The outer cover opens left around a side spine. Portrait documents attach at their top edge and turn upward independently, with modest paper flex. After opening, approach and center the document stack; allow intentional cropping of the empty cover. Lock the camera during the demonstrated page turn and keep the cabinet outside the reading composition.
+
+V3 proposes storing the portrait folder on its long edge to preserve V2's drawer footprint, rotating it after extraction, then adding a one-second content approach. Separate versioned outputs preserve V2. The close page occupies approximately 78% of frame height. These rendered proportions and the two reading holds are review evidence, not proof of browser readability or interaction usability. See [V3 review notes](../design/blender/README-v3.md). No website implementation is authorized by this iteration.
+
 ## Future entry format
 
 Record: decision, status, context, alternatives actually considered, reason, consequences, and evidence. Add dates when decisions are made. Avoid inventing retrospective experiments to justify a choice.
