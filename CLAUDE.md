@@ -13,7 +13,7 @@ Read and follow `AGENTS.md` at the repository root before doing any work. It is 
 
 ## Scope and privacy reminders
 
-The current stage is camera storyboard and visual exploration. Do not begin website implementation or production modeling without an explicit request. Review-only assignments stay review-only.
+Blender V3 is the accepted storyboard baseline. The current stage is implementation planning and repository preparation. Use the task-specific reading guide in AGENTS.md, including docs/implementation-plan.md and docs/testing.md. Do not begin website implementation or production modeling without an explicit assignment. Review-only assignments stay review-only.
 
 The `private/` directory and every derivative of its contents are local-only. Never commit, force-add, publish, upload, serve, or include them in a build. Never send them to an image-generation service. Public content derived from private sources requires owner approval first. Preserve original source files and work from local copies.
 

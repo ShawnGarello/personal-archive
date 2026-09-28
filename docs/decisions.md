@@ -68,6 +68,40 @@ Claude must not be an author or co-author. Use the configured human identity and
 | Lightweight CI and focused interaction tests | Checks breakage without a large test-maintenance burden | Phase 1 foundation |
 | Editable 3D sources plus optimized web exports | Makes the modeling process learnable and reproducible | Asset workflow and licensing |
 
+## D010: First Blender motion study
+
+Date: 2026-09-26. Status: owner authorized the prototype; its specific design choices await review.
+
+Create an editable Blender study on `design/archive-blender-draft` in a separate worktree and scene. Preserve the original scene and stop after presenting the first motion draft. This is a scoped exception to the earlier prohibition on starting 3D work; website implementation and detailed production assets remain outside the assignment.
+
+The draft proposes one activation, a horizontal folder in a shallow upper drawer, a vertical lift followed by outward travel, and an opening cover that settles against an implied pale surface. It preserves the same folder, and camera framing removes the cabinet from the reading view. None of these proposed construction, timing or material choices supersedes the confirmed direction without owner review.
+
+Large `.blend` and render outputs remain in ignored local `artifacts/`; rebuilding scripts and review notes enter ordinary Git. No external asset storage or publication is introduced. See [draft notes](../design/blender/README.md) for timing, evidence, limitations and unresolved choices.
+
+## D011: Revised cabinet reference and upright extraction
+
+Date: 2026-09-27. Status: owner-directed iteration; exact motion and final appearance await review.
+
+The latest owner-supplied reference replaces the earlier green cabinet and steep arrival as the direction for this study. Use a tall, narrow neutral-metal cabinet, a centered modest downward view with the cabinet around half the image height, pale surroundings, and upright files with visible tabs. Extract one continuous portfolio file vertically before bringing it outward and rotating it for reading. Target four to five seconds from activation to reading, plus opening and final holds.
+
+Version 1 was preserved before making an independent V2 scene and versioned outputs. The V2 proposal reaches reading in 4.75 seconds, with a 0.75-second arrival and two-second reading hold. See [V2 review notes](../design/blender/README-v2.md) for render evidence, geometric checks and unresolved choices. This authorization remains limited to a 3D design iteration.
+
+## D012: Separate cover and document hinges; content-focused reading
+
+Date: 2026-09-27. Status: owner-directed V3 study; exact construction and timing await review.
+
+Retain V2's liked cabinet composition, upright filing and extraction. The outer cover opens left around a side spine. Portrait documents attach at their top edge and turn upward independently, with modest paper flex. After opening, approach and center the document stack; allow intentional cropping of the empty cover. Lock the camera during the demonstrated page turn and keep the cabinet outside the reading composition.
+
+V3 proposes storing the portrait folder on its long edge to preserve V2's drawer footprint, rotating it after extraction, then adding a one-second content approach. Separate versioned outputs preserve V2. The close page occupies approximately 78% of frame height. These rendered proportions and the two reading holds are review evidence, not proof of browser readability or interaction usability. See [V3 review notes](../design/blender/README-v3.md). No website implementation is authorized by this iteration.
+
+## D013: Accept V3 storyboard and prepare implementation
+
+Date: 2026-09-27. Status: accepted by the owner for integration into main.
+
+Use V3's cabinet, upright extraction, sideways outer cover, portrait documents, independent upward sheet turn, and stable content-focused reading as the implementation baseline. Acceptance covers the storyboard, not final textures, lighting, typography, content, or responsive behavior. Test a modestly closer page view in the first browser prototype rather than extending Blender exploration indefinitely.
+
+Merge the design scripts and review record; preserve local binary artifacts and the design worktree. Add inexpensive repository checks now. Add application type/lint/build checks with the app foundation, and behavior tests with the entrance/page interactions. Detailed first waves are in [implementation preparation](implementation-plan.md). Website code is not part of this integration task.
+
 ## Future entry format
 
 Record: decision, status, context, alternatives actually considered, reason, consequences, and evidence. Add dates when decisions are made. Avoid inventing retrospective experiments to justify a choice.

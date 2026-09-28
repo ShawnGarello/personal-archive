@@ -1,6 +1,6 @@
 # Phases and waves
 
-Status: proposed roadmap. Phase 0 is active; implementation has not started. Later waves may change when design exploration or prototypes reveal new information.
+Status: V3 storyboard accepted on 2026-09-27; implementation preparation is active. Application implementation has not started. Follow the [detailed first-wave plan](implementation-plan.md) and [testing policy](testing.md). Later waves may change based on browser evidence.
 
 A phase delivers an outcome. A wave is a small, reviewable piece of that outcome; it does not imply parallel agents or separate worktrees. Complete dependencies before beginning dependent work. No schedule estimate is committed yet.
 
@@ -14,17 +14,17 @@ Purpose: establish what the site communicates, contains, and looks like before i
 | 0B: Camera and experience | Camera storyboard, object movement, navigation, fallback behavior | Click-triggered movement leads continuously to an isolated pale reading view; cabinet leaves the composition |
 | 0C: Visual direction | Reference board and rough cabinet, drawer, and reading compositions | Materials, lighting, typography direction, and desktop/mobile hierarchy support the established storyboard |
 
-Current state: initial written drafts exist. The owner identified software engineering recruiters, fellow developers, and UI/UX enthusiasts as audiences, while welcoming everyone. A precise, curated case-file feeling is confirmed. Content selection and specific visual compositions remain open. A written concept alone does not complete visual design.
+Current state: audience, archive concept, and the V3 camera/cover/page storyboard are established. Content approval and final visual polish remain open and can proceed alongside the technical prototype. Phone composition and readable web content must be proved in the browser; they are not established by the Blender draft.
 
 ## Phase 1: Prove the central interaction
 
-Depends on Phase 0's agreed direction. Purpose: resolve the largest technical risks using simple geometry and representative content.
+Depends on the accepted V3 storyboard. Purpose: resolve the largest technical risks using limited scene geometry and representative fictional content.
 
 | Wave | Deliverable | Completion criteria |
 | --- | --- | --- |
-| 1A: App foundation | Selected stack, reproducible setup, lightweight CI | A clean checkout installs and builds; type and lint checks pass |
-| 1B: Cabinet to folder | One drawer, one folder, coordinated camera transitions | The sequence works with pointer and keyboard; repeated activation cannot corrupt state |
-| 1C: Folder to content | A readable sample page and project view | The 3D/HTML handoff works, including mobile, reduced motion, and 3D failure |
+| 1A: Foundation and reading surface | Selected stack, accessible sample content, type/lint/build CI | Clean checkout runs; useful content is available independently of 3D |
+| 1B: Entrance to content | V3 entrance and a stable handoff to readable text | Pointer/keyboard activation, skip access, framing comparison, and browser smoke test |
+| 1C: Reversible page turn | Two documents, navigation, reduced motion, failure handling | Forward/back and repeated actions work; camera stays stable; phone reading is verified |
 
 Do not create the entire polished asset set before proving the handoff. Record experiments and rejected approaches with their reasons.
 
@@ -62,7 +62,7 @@ Depends on the finished experience. Purpose: make the site reliable and the repo
 
 ## Testing policy
 
-- README-only planning does not need an application CI pipeline.
+- Repository CI now checks tracked-file boundaries, local documentation links, Python syntax, and JSON. It does not render Blender or test application behavior.
 - Add type checking, linting, and a production build when app code arrives.
 - Add a browser smoke test once the core journey is stable enough to exercise.
 - Unit-test meaningful state or navigation logic, especially interrupted or repeated actions.

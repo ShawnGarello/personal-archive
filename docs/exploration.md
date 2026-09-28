@@ -1,6 +1,6 @@
 # Visual exploration
 
-Status: proposed exploration process. No direction boards, mockups, or models have been produced yet.
+Status: historical exploration plan. Blender V3 is now the accepted storyboard baseline; see [experience](experience.md) and [implementation preparation](implementation-plan.md). The alternatives below record earlier exploration, not pending requirements to redo. Final visual polish remains open.
 
 ## What stays consistent
 

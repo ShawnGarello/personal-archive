@@ -1,6 +1,6 @@
 # Experience and visual brief
 
-Status: proposed storyboard for discussion. This is a written sketch, not an approved visual design or implementation specification.
+Status: the V3 storyboard is accepted as the implementation baseline as of 2026-09-27. Visual polish, final content, exact reading framing, and browser behavior remain to be established. See [V3 notes](../design/blender/README-v3.md) and the [implementation plan](implementation-plan.md).
 
 ## Visual premise
 
@@ -10,23 +10,23 @@ Proposed visual interpretation: neatly arranged folders, consistent label placem
 
 Recruiters should be able to scan the work and background quickly, while fellow developers and UI/UX enthusiasts can explore the details and making-of material. Both paths belong to the same portfolio.
 
-The cabinet is the dominant object in the entrance composition. The owner has confirmed that the reading view isolates the folder and pages against a clean white/off-white background, with no cabinet visible behind them. As the camera follows the folder outward, the cabinet must leave the composition. This visual endpoint is decided; how the framing and transition achieve it remains to be storyboarded. Exact materials, lighting, accent palette, typography, and the surrounding entrance space remain undecided.
+The cabinet is the dominant object in the entrance composition. The reading view isolates the folder and pages against a clean white/off-white background, with no cabinet visible behind them. Use V3's camera sequence and geometry as the baseline: follow the folder outward, let the cabinet leave the composition, then approach the reading page. Final materials, lighting, accent palette, typography, and background finish remain open.
 
 Explore the cabinet, folder, paper, photograph borders, tabs, and handwriting as a coherent family. Textures must survive close inspection without making text harder to read. Real project images supply the content; decorative photographs must not stand in for evidence of work.
 
-## Proposed storyboard
+## Storyboard baseline
 
 | Scene | What the visitor sees and does | Transition or result |
 | --- | --- | --- |
 | Arrival | Cabinet, owner's approved name and role, clear opening action, work/contact shortcuts | A subtle settling movement is optional; the main sequence waits for a deliberate click |
 | Open drawer | Activate the handle or its equivalent button | Drawer movement and camera approach overlap |
-| Select folder | A clearly labeled personal folder rises without a visible hand | Camera follows the folder outward as the cabinet leaves the composition; whether a second activation is needed remains open |
-| Open folder | Folder settles into the reading position and its cover opens | Camera settles on the folder against white/off-white; introduction and navigation become readable |
-| Browse pages | Use tabs or page controls to explore the portfolio | Short page transitions preserve context |
+| Select folder | A clearly labeled upright personal folder rises without a visible hand | The initial activation continues through extraction; camera follows outward as the cabinet leaves the composition |
+| Open folder | Outer cover opens to the left, revealing portrait documents | Camera approaches and centers the document stack; empty cover may be cropped |
+| Browse pages | Documents turn upward around a separate top attachment | Camera stays fixed; reading holds last until the visitor navigates |
 | Inspect project | Activate a project photograph or title | Read a complete project view and enlarge media |
 | Return | Close the project view or choose to return to the cabinet | Preserve the page location; avoid replaying the entire entrance |
 
-Whether the folder rests on an implied pale surface or appears suspended is an open design choice. Earlier shelf and desk proposals are optional staging ideas, not requirements. Any supporting surface must preserve the clean reading background, and the cabinet must be out of view. Resolve the object's destination in the camera storyboard before detailed modeling.
+V3 uses an implied pale supporting surface. Preserve the isolated reading composition in the prototype; detailed surface treatment remains provisional. Earlier shelf/desk scene alternatives are not the current baseline.
 
 ## Reading layout
 
@@ -37,7 +37,7 @@ Proposed organization:
 - Experience: an owner-approved readable summary. No private source document or resume download.
 - Contact: clear public contact links.
 
-Desktop may use an open spread if actual content fits comfortably. Mobile should use one readable page at a time. The scene must adapt to the reading layout rather than shrinking desktop text to fit the phone.
+Use one portrait document as the primary reading surface. The side cover can be cropped. Adapt the scene to readable content on desktop and phone rather than shrinking desktop text to fit. Compare the current roughly 78% page-height framing with a modestly closer view in the browser prototype.
 
 Polaroid-style frames work as previews. Detailed screenshots should also have an uncropped, enlarged view. Project details need room for the problem, the owner's role, key choices, outcome, and relevant links.
 
@@ -70,12 +70,12 @@ Accessibility is an implementation requirement to verify, not a claim of current
 
 A candidate approach combines 3D objects and movement with semantic HTML for readable content. The key experiment is the handoff from the physical folder to the reading surface: alignment, text clarity, focus, and navigation must remain coherent.
 
-Blender is a candidate tool for creating editable models and exported web assets. Framework, animation library, hosting, page-turn technique, and asset pipeline are not selected yet.
+Blender is the established storyboard tool. Framework, animation library, hosting, browser page-turn technique, and production asset pipeline are not selected yet. Do not assume the prototype's lattice deformation or text meshes transfer directly to a browser.
 
 Static environment details may suit baked lighting. Moving drawers and pages need separate consideration so shadows do not appear attached to the wrong surface. Test this before polishing all assets.
 
-## Next design artifacts
+## Next validation
 
-Prepare a small reference board and rough compositions for the cabinet view, drawer view, and reading view, including a phone version. Compare visual directions before selecting final colors, fonts, or detailed models. The next step is visual exploration, not a production interface.
+Prepare the scoped browser prototype described in the implementation plan, when assigned. Validate readable content and navigation against the V3 composition before detailing all assets. Final colors, fonts, textures, and lighting can be refined after this handoff works.
 
 Follow [the exploration plan](exploration.md). Use fictional placeholder content in public or externally generated concept images; do not include private resume text, screenshots, or contact details.

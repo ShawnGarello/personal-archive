@@ -8,6 +8,12 @@ build/
 .DS_Store
 Thumbs.db
 
+# Rebuildable Blender motion studies; local deliverables, not ordinary Git blobs.
+/artifacts/
+*.blend1
+__pycache__/
+*.pyc
+
 # Private source documents and all derived notes, text, and previews.
 /private/
 # Also exclude resume PDFs if accidentally copied outside the private folder.

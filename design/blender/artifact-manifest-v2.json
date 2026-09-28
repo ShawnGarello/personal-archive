@@ -1,0 +1,71 @@
+{
+  "version": 2,
+  "storage": "Local only: ignored artifacts/archive-motion-draft/v2; V1 preserved under v1.",
+  "files": [
+    {
+      "path": "archive-motion-v2.blend",
+      "bytes": 226756,
+      "sha256": "3b37dc46b244f2aaf0b6784532af80fb520f2f0fb638c89c08a70072401cf3a4"
+    },
+    {
+      "path": "archive-motion-v2.mp4",
+      "bytes": 659504,
+      "sha256": "70bfe0fa9ddea5dd43a6471049c79dbbb2eb073bbe44be4736b8d943e50080e3"
+    },
+    {
+      "path": "representative-frames.jpg",
+      "bytes": 84261,
+      "sha256": "d58464611d5b548d80e63d9e7d99adc9329efd03c9a2d1d6cbf636030b60f38d"
+    },
+    {
+      "path": "arrival-comparison.jpg",
+      "bytes": 49064,
+      "sha256": "165dfa247c1406956a9ceaad7c2a4604a7812a16e4853c610d85d254ac6824b5"
+    },
+    {
+      "path": "video-contact-sheet.jpg",
+      "bytes": 206033,
+      "sha256": "fe9eabed6672ce4d27faaf2e79d56c3a6bd69b253364a2e9b319e83e5f4b8297"
+    },
+    {
+      "path": "checks.json",
+      "bytes": 1125,
+      "sha256": "3e568156e9d0ca3b3f358a9757d70fa8e9587d2fc5b705a97381736642d2bc21"
+    },
+    {
+      "path": "stills/0001.png",
+      "bytes": 577253,
+      "sha256": "b5af9c1a7d73ffb34cf668ddcec6645dc40babc55b467f52d695458c6db7f3c8"
+    },
+    {
+      "path": "stills/0050.png",
+      "bytes": 597737,
+      "sha256": "5b695479c2cfdd9f5f64cabb0a283643294ed9aa4bcecf6841225e9b717c7de5"
+    },
+    {
+      "path": "stills/0070.png",
+      "bytes": 594110,
+      "sha256": "02e09e9b683c49b63321d8f15291e2b9395d2db7c4474fcc30f1587c96f17b28"
+    },
+    {
+      "path": "stills/0082.png",
+      "bytes": 598718,
+      "sha256": "6cca919e5563dcec98cf2094701aad699c7cc32b66f94a33c1a4adbaac513734"
+    },
+    {
+      "path": "stills/0106.png",
+      "bytes": 573874,
+      "sha256": "7345bce6c1fb56001df30de6536fbc469790a4d230dee251409bd251aebbd1e7"
+    },
+    {
+      "path": "stills/0132.png",
+      "bytes": 584952,
+      "sha256": "0ef70e1258f6c8b53cfb36063f41dd1f0d44bdfbc4681a757632a4096e38a57a"
+    },
+    {
+      "path": "stills/0180.png",
+      "bytes": 584961,
+      "sha256": "d045d172064d005e0eb5b9cec8670675ef2070c9c6a6b5829d73b029c60b1fa5"
+    }
+  ]
+}
