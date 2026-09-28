@@ -24,6 +24,8 @@ Keep browser tests focused on observable behavior. Avoid fixed sleep-based timin
 
 ## First prototype review
 
+Each [wave contract](contracts/README.md) maps acceptance criteria to evidence. Record actual results and limitations in its wave report. Remote CI is only reported as passed after observing a successful run; local checks alone do not establish GitHub status.
+
 Verify the entrance, the first readable page, one forward and reverse turn, keyboard navigation, reduced motion, and a forced 3D failure. Review desktop and a narrow phone viewport. Record real browser/device, content size, load measurements, and rendering performance before setting final performance budgets.
 
 GitHub Actions checks initially provide visibility; branch protection and required-check policies are separate settings and are not configured by this workflow. No CI job deploys the site or uploads local Blender artifacts.

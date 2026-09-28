@@ -65,7 +65,7 @@ Claude must not be an author or co-author. Use the configured human identity and
 | One cabinet and one primary folder for the first release | Keeps the central journey achievable and coherent | Phase 0 scope |
 | 3D environment with readable HTML content | Supports the physical metaphor and ordinary web navigation | Phase 1 handoff experiment |
 | Direct work/contact access and section tabs | Supports visitors who want specific information quickly | Phase 0 experience |
-| Lightweight CI and focused interaction tests | Checks breakage without a large test-maintenance burden | Phase 1 foundation |
+| Application checks and focused interaction tests | Extends the repository CI established in D013 as behavior is implemented | Phase 1 contracts |
 | Editable 3D sources plus optimized web exports | Makes the modeling process learnable and reproducible | Asset workflow and licensing |
 
 ## D010: First Blender motion study
@@ -101,6 +101,14 @@ Date: 2026-09-27. Status: accepted by the owner for integration into main.
 Use V3's cabinet, upright extraction, sideways outer cover, portrait documents, independent upward sheet turn, and stable content-focused reading as the implementation baseline. Acceptance covers the storyboard, not final textures, lighting, typography, content, or responsive behavior. Test a modestly closer page view in the first browser prototype rather than extending Blender exploration indefinitely.
 
 Merge the design scripts and review record; preserve local binary artifacts and the design worktree. Add inexpensive repository checks now. Add application type/lint/build checks with the app foundation, and behavior tests with the entrance/page interactions. Detailed first waves are in [implementation preparation](implementation-plan.md). Website code is not part of this integration task.
+
+## D014: Prepare scoped implementation contracts
+
+Date: 2026-09-27. Status: owner requested documentation and contracts before implementation; contracts prepared, application work not started.
+
+Translate the first three waves into [assignments with acceptance evidence](contracts/README.md). Prepare Wave 1A for assignment and keep dependent contracts subject to findings from browser work. Separate content, readable HTML, experience control, scene animation and asset responsibilities without prescribing untested APIs or selecting a stack in a documentation session.
+
+The proposed implementation workflow uses one reviewed wave at a time, fictional fixtures, focused checks, and a reproducible report. Stack selection belongs to Wave 1A; scene transfer and HTML alignment to Wave 1B; browser paper deformation to Wave 1C. These technical choices remain open. Preparing these contracts does not authorize implementation, deployment, or publication of personal content.
 
 ## Future entry format
 

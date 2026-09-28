@@ -38,6 +38,12 @@ The owner accepted V3 as the storyboard baseline and requested integration into 
 
 Added dependency-free repository checks for tracked-file boundaries, documentation links, Python syntax, and JSON. Application checks will be added alongside the application. Added a fresh-checkout rebuild entry point that supplies the V1 source path required by later builders. Source scenes and videos remain local; no private references are published.
 
+## Implementation contracts prepared - 2026-09-27
+
+The owner requested detailed documents and contracts before beginning implementation. Added a shared responsibility and interaction agreement, plus scoped contracts for the browser foundation, cabinet-to-content handoff, and reversible document turn. Each contract records dependencies, sequential work, acceptance evidence, and deferred work. Wave 1A includes a plain-paragraph prompt for a separate implementation session.
+
+The contracts keep the accepted V3 motion distinct from unapproved final styling and browser techniques. They make loading/skip behavior, repeated input, transition ownership, semantic content, and failure access explicit. Updated agent reading guidance and planning links. No application stack, dependencies, production assets, or private content were introduced. The next step is assigning Wave 1A; later contracts will be refined from its results.
+
 ## Format for future milestones
 
 - Objective: what we wanted to learn or deliver.

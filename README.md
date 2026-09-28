@@ -15,6 +15,7 @@ See the [Blender study and fresh-checkout instructions](design/blender/README.md
 - [Visual exploration](docs/exploration.md): directions to compare and how to choose the scene composition.
 - [Phases and waves](docs/roadmap.md): deliverables, dependencies, and completion criteria.
 - [Implementation preparation](docs/implementation-plan.md): the next waves, reading experiment, and validation requirements.
+- [Implementation contracts](docs/contracts/README.md): step-by-step assignments, shared responsibilities, review evidence, and the first implementation prompt.
 - [Checks and CI](docs/testing.md): what runs now and when application tests will be added.
 - [Decision log](docs/decisions.md): confirmed decisions and proposals still being evaluated.
 - [Development journal](docs/devlog.md): the process, experiments, and lessons as the project develops.

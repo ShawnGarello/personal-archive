@@ -31,7 +31,7 @@ For visual exploration, also read `docs/exploration.md`. Use fictional placehold
 
 | Task | Required additional reading |
 | --- | --- |
-| Implementation planning or a scoped wave | `docs/implementation-plan.md`, `docs/testing.md`, and the assigned wave's completion criteria |
+| Implementation planning or a scoped wave | `docs/implementation-plan.md`, `docs/testing.md`, `docs/contracts/README.md`, and the assigned contract in `docs/contracts/` |
 | Blender or asset changes | `design/blender/README.md`, `design/blender/README-v3.md`, and the relevant builder/checker |
 | Camera, paper, or reading behavior | `docs/experience.md` and the V3 review notes; preserve the accepted sequence |
 | Review/audit | Assigned wave's criteria, changed files, validation evidence, and applicable decisions |

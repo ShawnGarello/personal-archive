@@ -4,6 +4,8 @@ Status: V3 storyboard accepted on 2026-09-27; implementation preparation is acti
 
 A phase delivers an outcome. A wave is a small, reviewable piece of that outcome; it does not imply parallel agents or separate worktrees. Complete dependencies before beginning dependent work. No schedule estimate is committed yet.
 
+Detailed [implementation contracts](contracts/README.md) now define the first three waves. Begin with the Wave 1A assignment; revise dependent contracts using browser evidence before assigning them.
+
 ## Phase 0: Define the portfolio
 
 Purpose: establish what the site communicates, contains, and looks like before implementing it.
