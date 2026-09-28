@@ -1,0 +1,24 @@
+---
+import type { ArchiveDocument } from '../content/fictional-document';
+
+interface Props { document: ArchiveDocument }
+const { document } = Astro.props;
+---
+
+<article class="document" id={document.id} aria-labelledby={`${document.id}-title`}>
+  <header>
+    <p class="document-label">{document.label}</p>
+    <h1 id={`${document.id}-title`}>{document.title}</h1>
+  </header>
+  {document.introduction.map((paragraph) => <p>{paragraph}</p>)}
+  <section aria-labelledby={`${document.id}-project`}>
+    <h2 id={`${document.id}-project`}>{document.project.title}</h2>
+    <p>{document.project.summary}</p>
+    <h3>A possible approach</h3>
+    <p>{document.project.approach}</p>
+    <h3>What remains to explore</h3>
+    <p>{document.project.reflection}</p>
+    <p class="reference"><a href={document.project.link.href}>{document.project.link.label}</a></p>
+    <p class="reference-note">Background reading about the idea, not a live project.</p>
+  </section>
+</article>

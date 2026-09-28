@@ -110,6 +110,20 @@ Translate the first three waves into [assignments with acceptance evidence](cont
 
 The proposed implementation workflow uses one reviewed wave at a time, fictional fixtures, focused checks, and a reproducible report. Stack selection belongs to Wave 1A; scene transfer and HTML alignment to Wave 1B; browser paper deformation to Wave 1C. These technical choices remain open. Preparing these contracts does not authorize implementation, deployment, or publication of personal content.
 
+## D015: Static HTML foundation and future transition ownership
+
+Date: 2026-09-27. Status: selected within the owner's Wave 1A assignment; implementation awaits audit before integration.
+
+Choose Astro with strict TypeScript and plain CSS, using Node 24 LTS and npm with a committed lockfile. Generate the fictional document as HTML during build, with no hydrated component or runtime dependency on a renderer. Separate typed content from the reading component and future scene construction. The app lives under `app/`; repository references and local artifacts are outside its public asset path. See [setup and architecture](application.md).
+
+Alternatives considered without installing them: Vite with vanilla TypeScript would keep later scene code simple, but would need a separate templating step to generate content HTML; a client-rendered React/Vite app would introduce hydration and a client content dependency without useful state in this wave. Astro supplies static templates now and a later client-script integration point. This choice does not select a scene or animation library, prove HTML-to-3D alignment, or require an additional UI framework later.
+
+The future experience controller will own navigation and transition IDs, with one scene adapter owning camera/object animation. Loading, idle, entering, reading, turning, cancellation, failure, and reduced-motion behavior are documented proposals for 1B/1C. Wave 1A simply renders reading content immediately; no simulated delay, unused state framework, or controls for missing behavior.
+
+Official guidance checked during selection: [Astro installation](https://docs.astro.build/en/install-and-setup/), [static components](https://docs.astro.build/en/basics/astro-components/), [TypeScript checking](https://docs.astro.build/en/guides/typescript/), [Astro configuration](https://docs.astro.build/en/reference/configuration-reference/), [Vite filesystem restrictions](https://vite.dev/config/server-options.html#server-fs-deny), [Astro ESLint integration](https://ota-meshi.github.io/eslint-plugin-astro/user-guide/), [Node release support](https://github.com/nodejs/Release), and [setup-node](https://github.com/actions/setup-node). npm registry package metadata was also checked: Astro checker and TypeScript ESLint support TypeScript 6, so this wave deliberately avoids the registry's newer TypeScript 7. Exact installed versions and results belong in the wave report.
+
+The appearance remains provisional: a white portrait surface on a pale neutral surround, system fonts, underlined links, and natural scrolling. No final palette or typography decision is implied. No private source or derivatives informed the invented content.
+
 ## Future entry format
 
 Record: decision, status, context, alternatives actually considered, reason, consequences, and evidence. Add dates when decisions are made. Avoid inventing retrospective experiments to justify a choice.

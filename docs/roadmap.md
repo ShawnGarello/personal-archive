@@ -1,10 +1,10 @@
 # Phases and waves
 
-Status: V3 storyboard accepted on 2026-09-27; implementation preparation is active. Application implementation has not started. Follow the [detailed first-wave plan](implementation-plan.md) and [testing policy](testing.md). Later waves may change based on browser evidence.
+Status: V3 storyboard accepted on 2026-09-27; Wave 1A is implemented and locally verified, awaiting audit. Follow the [detailed first-wave plan](implementation-plan.md) and [testing policy](testing.md). Later waves may change based on browser evidence.
 
 A phase delivers an outcome. A wave is a small, reviewable piece of that outcome; it does not imply parallel agents or separate worktrees. Complete dependencies before beginning dependent work. No schedule estimate is committed yet.
 
-Detailed [implementation contracts](contracts/README.md) now define the first three waves. Begin with the Wave 1A assignment; revise dependent contracts using browser evidence before assigning them.
+Detailed [implementation contracts](contracts/README.md) define the first three waves. Audit the Wave 1A result, then revise dependent contracts using browser evidence before assigning them.
 
 ## Phase 0: Define the portfolio
 

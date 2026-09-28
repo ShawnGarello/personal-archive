@@ -1,6 +1,6 @@
 # Wave 1A: Browser foundation and content surface
 
-Status: ready to assign. Implementation has not begun. This is the first bounded build assignment; later waves remain unassigned.
+Status: implemented and locally verified on `implement/wave-1a`, 2026-09-27; awaiting audit before integration. See the [wave report](../reviews/wave-1a.md). Later waves remain unassigned.
 
 ## Outcome and scope
 

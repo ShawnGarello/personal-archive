@@ -8,7 +8,7 @@ It checks tracked file paths for private directories, local artifacts, resume PD
 
 This is a guard against specific accidental inclusions, not a general secret scanner. Renamed private documents or personal details copied into otherwise permitted files still require staged-diff review. Ignore rules also do not prevent a future build from copying private files.
 
-The current pipeline does not install Blender, render movies, validate external URLs, check Markdown anchors, or test a website that does not exist yet.
+The application job installs locked dependencies with `npm ci`, then runs `npm run typecheck`, `npm run lint`, and `npm run build`. See [application setup](application.md) for the runtime and exact local equivalents. The current pipeline does not install Blender, render movies, validate external URLs, check Markdown anchors, or run browser interaction tests.
 
 ## Add tests alongside their behavior
 
