@@ -38,10 +38,70 @@ a:hover { text-decoration-thickness: 0.16em; }
 .reference { margin-top: 2rem; margin-bottom: 0.5rem; }
 .reference a { display: inline-block; padding-block: 0.5rem; }
 .reference-note { color: oklch(0.42 0 0); font-size: 0.875rem; }
-.skip-link { position: absolute; top: 0.5rem; left: 1rem; padding: 0.75rem; background: oklch(1 0 0); transform: translateY(-200%); }
+.skip-link { position: absolute; z-index: 10; top: 0.5rem; left: 1rem; padding: 0.75rem; background: oklch(1 0 0); transform: translateY(-200%); }
 .skip-link:focus { transform: none; }
 
 @media (max-width: 40rem) {
   .document { min-height: 0; }
   h1 { font-size: 2rem; }
 }
+
+/* Entrance and scene reading surface (Wave 1B). Without JavaScript, or in the
+   flat fallback, only the plain document layout above applies. */
+.scene-layer, .entrance { display: none; }
+.experience-status { max-width: 46rem; margin: 0 auto 1rem; padding: 0 1rem; color: oklch(0.36 0 0); }
+.experience-status:empty { display: none; }
+
+html[data-surface='scene'], html[data-surface='scene'] body { height: 100%; overflow: hidden; }
+html[data-surface='scene'] body { background: #f4f3ef; }
+html[data-surface='scene'] .scene-layer { display: block; position: fixed; inset: 0; }
+.scene-layer canvas { display: block; width: 100%; height: 100%; }
+html[data-surface='scene'] .site-header {
+  position: fixed; inset: 0 0 auto; z-index: 2; max-width: none; pointer-events: none;
+  padding: 0.75rem 1rem; font-size: 0.9375rem;
+}
+html[data-surface='scene'] .site-footer {
+  position: fixed; left: 0; bottom: 0; z-index: 2; max-width: none; margin: 0; padding: 0.75rem 1rem;
+  font-size: 0.75rem; pointer-events: none;
+}
+html[data-surface='scene']:not([data-phase='reading']) .site-footer { display: none; }
+
+/* Status and controls stack at the bottom of the entrance view. */
+html[data-surface='scene']:not([data-phase='reading']) .dock {
+  position: fixed; left: 1rem; right: 1rem; bottom: max(1.5rem, env(safe-area-inset-bottom)); z-index: 3;
+  display: flex; flex-direction: column; align-items: center; gap: 0.75rem;
+}
+html[data-surface='scene'][data-phase='reading'] .dock { display: none; }
+html[data-surface='scene'] .experience-status { margin: 0; padding: 0; text-align: center; font-size: 0.9375rem; }
+html[data-surface='scene']:not([data-phase='reading']) .entrance {
+  display: flex; flex-wrap: wrap; justify-content: center; gap: 0.75rem;
+}
+.entrance button {
+  font: inherit; font-size: 1rem; line-height: 1.2; min-height: 2.75rem; padding: 0.7rem 1.25rem;
+  border-radius: 999px; border: 1px solid oklch(0.3 0 0); cursor: pointer;
+}
+.entrance-open { background: oklch(0.25 0 0); color: oklch(0.98 0 0); }
+.entrance-read { background: oklch(0.99 0 0 / 0.85); color: oklch(0.25 0 0); }
+.entrance-open[aria-disabled='true'] { opacity: 0.55; cursor: progress; }
+
+/* The HTML page tracks the 3D paper. Its background stays transparent so the
+   rendered sheet is the paper; the text is the only readable copy. */
+html[data-surface='scene'] .paper {
+  position: fixed; left: 0; top: 0; z-index: 1; visibility: hidden;
+  transform-origin: 0 0; container-type: inline-size;
+}
+html[data-surface='scene']:is([data-phase='entering'], [data-phase='reading']) .paper { visibility: visible; }
+html[data-surface='scene'][data-phase='entering'] .paper { pointer-events: none; }
+/* Top 4% of the sheet stays clear of the V3 fastening straps. */
+html[data-surface='scene'] #reading {
+  position: absolute; inset: 4% 0 0; max-width: none; margin: 0;
+  overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin;
+  /* Fade the lower edge so continuing text reads as scrollable. */
+  mask-image: linear-gradient(to bottom, #000 calc(100% - 2.5rem), transparent);
+}
+html[data-surface='scene'] #reading:focus-visible { outline-offset: -3px; }
+html[data-surface='scene'] .document {
+  min-height: 0; background: transparent; padding: 5cqi 9cqi 8cqi;
+}
+html[data-surface='scene'] .document h1 { font-size: clamp(1.75rem, 6.5cqi, 2.5rem); margin-bottom: 1.5rem; }
+html[data-surface='scene'] .document h2 { font-size: clamp(1.375rem, 4.6cqi, 1.75rem); }

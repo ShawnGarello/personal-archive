@@ -52,6 +52,12 @@ After the owner resolved a disk-space blocker, installed the selected local Node
 
 Inspected Chromium screenshots at desktop, 390px phone width, actual 200% browser zoom, and enlarged text. Verified keyboard skip/link navigation, visible focus, text copy, and JavaScript-disabled reading. The output is one HTML file with inline CSS and no client JavaScript. See the [Wave 1A record](reviews/wave-1a.md) for exact evidence and limitations. Remote CI, other browser engines, physical devices, and screen readers remain untested. The next step is audit before integration; Wave 1B is unassigned.
 
+## Wave 1B entrance implemented - 2026-09-28
+
+Created `implement/wave-1b` in an isolated worktree from merged main (`0f2095c`, containing Wave 1A and correction `3655a6a`). Added a Blender export script for the V3 entrance objects and animation. Implemented a three.js scene adapter, one experience controller, and a reading view that maps the existing semantic document onto the paper during the cover opening and settles it untransformed. No private files were accessed; content remains the Wave 1A fiction.
+
+Browser review found and fixed a phone layout where the status line intercepted taps on Open, and a skip link hidden beneath the canvas. It also corrected tone mapping and lighting to approach V3's muted materials and soft shadows. Nine Playwright behaviour tests pass with a GPU and with software WebGL. On an integrated GPU the entrance runs at 60 fps. The framing study, deviations, and open phone composition question are recorded in the [Wave 1B record](reviews/wave-1b.md). The next step is audit; Wave 1C is not started.
+
 ## Format for future milestones
 
 - Objective: what we wanted to learn or deliver.

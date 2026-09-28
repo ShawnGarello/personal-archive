@@ -11,6 +11,24 @@ import '../styles/global.css';
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content="A fictional document for the Personal Archive reading study." />
     <title>Fictional reading study · Personal Archive</title>
+    <script is:inline>
+      // Choose the entrance before first paint. Without JavaScript, or if the
+      // experience module fails to run, the document stays in its plain layout.
+      (() => {
+        const root = document.documentElement;
+        const scene = !matchMedia('(prefers-reduced-motion: reduce)').matches && 'WebGL2RenderingContext' in window;
+        root.dataset.phase = scene ? 'loading' : 'reading';
+        root.dataset.surface = scene ? 'scene' : 'flat';
+        document.addEventListener('DOMContentLoaded', () => {
+          if (root.dataset.booted) return;
+          root.dataset.phase = 'reading';
+          root.dataset.surface = 'flat';
+        });
+      })();
+    </script>
+    <script>
+      import '../scripts/experience/main';
+    </script>
   </head>
   <body>
     <a class="skip-link" href="#reading">Skip to document</a>
@@ -18,9 +36,19 @@ import '../styles/global.css';
       <p>Personal Archive</p>
       <p>Reading study</p>
     </header>
-    <main id="reading" tabindex="-1">
-      <ReadingDocument document={fictionalDocument} />
-    </main>
+    <div class="scene-layer" aria-hidden="true"><canvas data-scene-canvas></canvas></div>
+    <div class="dock">
+      <p class="experience-status" data-status role="status"></p>
+      <section class="entrance" data-entrance aria-label="Archive entrance">
+        <button type="button" class="entrance-open" data-action="open" aria-disabled="true">Open the archive</button>
+        <button type="button" class="entrance-read" data-action="read">Go straight to the document</button>
+      </section>
+    </div>
+    <div class="paper" data-paper>
+      <main id="reading" tabindex="-1">
+        <ReadingDocument document={fictionalDocument} />
+      </main>
+    </div>
     <footer class="site-footer"><p>Fictional content. Provisional page layout.</p></footer>
   </body>
 </html>

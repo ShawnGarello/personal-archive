@@ -1,6 +1,6 @@
 # Wave 1B: Cabinet to readable content
 
-Status: prepared for refinement after Wave 1A review; not assigned. Use the selected stack and reviewed content foundation, not a second scaffold.
+Status: assigned 2026-09-28; implemented and locally verified, awaiting audit. See the [Wave 1B record](../reviews/wave-1b.md). Use the selected stack and reviewed content foundation, not a second scaffold.
 
 ## Outcome and scope
 

@@ -13,7 +13,7 @@ blender --background --factory-startup --python-exit-code 1 --python design/blen
 blender --background artifacts/archive-motion-draft/v3/archive-motion-v3.blend --python-exit-code 1 --python design/blender/check_motion_v3.py
 ```
 
-The first command builds V1, creates the preserved V1 path expected by V2, then builds V2 and V3. It refuses to overwrite existing source outputs. No downloaded model or private reference is required. The checker writes a report; inspect its issue lists, because its original script does not use failures as a process exit code. Use the V3 notes for optional renders. Full Blender rendering is not part of ordinary CI.
+The first command builds V1, creates the preserved V1 path expected by V2, then builds V2 and V3. It refuses to overwrite existing source outputs. `export_web_v3.py` produces the browser scene from the saved V3 file; see the [scene asset workflow](../../docs/application.md#scene-asset-workflow). No downloaded model or private reference is required. The checker writes a report; inspect its issue lists, because its original script does not use failures as a process exit code. Use the V3 notes for optional renders. Full Blender rendering is not part of ordinary CI.
 
 [Version 2 review notes](README-v2.md), scripts and outputs remain preserved. Use each version's own rebuild commands.
 
