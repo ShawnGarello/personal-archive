@@ -4,7 +4,20 @@ A portfolio concept built around an interactive 3D filing cabinet: open a drawer
 
 ## Status
 
-Blender version 3 is the accepted storyboard baseline. Implementation planning is underway; no website implementation yet. Final visual polish and responsive reading behavior remain open.
+Blender version 3 is the accepted storyboard baseline. Wave 1A adds a locally verified static fictional reading study and awaits audit before integration; cabinet, camera, and page-turn implementation remain unassigned. See the [Wave 1A report](docs/reviews/wave-1a.md). Final visual polish remains open.
+
+## Run the reading study
+
+Use Node 24.21.0 and bundled npm 11.19.0, then run from the repository root:
+
+```sh
+npm ci
+npm run dev
+```
+
+Open `http://127.0.0.1:4321`. For a production preview, stop development, run `npm run build`, then `npm run preview`. Run `python scripts/check_repository.py` and `npm run check` for repository, type, and lint checks.
+
+See [application setup and architecture](docs/application.md) for supported versions, content/public boundaries, and future state ownership. Windows PowerShell users can substitute `npm.cmd` for `npm` when script policy requires it.
 
 See the [Blender study and fresh-checkout instructions](design/blender/README.md). Editable scenes and videos remain local in ignored `artifacts/`; the repository contains rebuilding scripts and review notes.
 
@@ -15,11 +28,12 @@ See the [Blender study and fresh-checkout instructions](design/blender/README.md
 - [Visual exploration](docs/exploration.md): directions to compare and how to choose the scene composition.
 - [Phases and waves](docs/roadmap.md): deliverables, dependencies, and completion criteria.
 - [Implementation preparation](docs/implementation-plan.md): the next waves, reading experiment, and validation requirements.
+- [Implementation contracts](docs/contracts/README.md): step-by-step assignments, shared responsibilities, review evidence, and the first implementation prompt.
 - [Checks and CI](docs/testing.md): what runs now and when application tests will be added.
 - [Decision log](docs/decisions.md): confirmed decisions and proposals still being evaluated.
 - [Development journal](docs/devlog.md): the process, experiments, and lessons as the project develops.
 
-These documents distinguish the accepted storyboard from open visual and technical choices. The implementation stack has not been selected.
+These documents distinguish the accepted storyboard from open visual and technical choices. Wave 1A selects Astro, TypeScript, and plain CSS for static delivery; no 3D dependency is installed.
 
 Private source documents and their derivatives stay in the ignored local `private/` directory. They are excluded from the public project and must never be served or included in deployment artifacts. See [project guidance](AGENTS.md) for handling rules.
 

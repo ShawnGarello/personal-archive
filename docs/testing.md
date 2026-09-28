@@ -8,7 +8,7 @@ It checks tracked file paths for private directories, local artifacts, resume PD
 
 This is a guard against specific accidental inclusions, not a general secret scanner. Renamed private documents or personal details copied into otherwise permitted files still require staged-diff review. Ignore rules also do not prevent a future build from copying private files.
 
-The current pipeline does not install Blender, render movies, validate external URLs, check Markdown anchors, or test a website that does not exist yet.
+The application job installs locked dependencies with `npm ci`, then runs `npm run typecheck`, `npm run lint`, and `npm run build`. See [application setup](application.md) for the runtime and exact local equivalents. The current pipeline does not install Blender, render movies, validate external URLs, check Markdown anchors, or run browser interaction tests.
 
 ## Add tests alongside their behavior
 
@@ -23,6 +23,8 @@ The current pipeline does not install Blender, render movies, validate external 
 Keep browser tests focused on observable behavior. Avoid fixed sleep-based timing assertions, implementation-mirroring tests, and arbitrary coverage targets. Expand test coverage when new behavior or failures justify it.
 
 ## First prototype review
+
+Each [wave contract](contracts/README.md) maps acceptance criteria to evidence. Record actual results and limitations in its wave report. Remote CI is only reported as passed after observing a successful run; local checks alone do not establish GitHub status.
 
 Verify the entrance, the first readable page, one forward and reverse turn, keyboard navigation, reduced motion, and a forced 3D failure. Review desktop and a narrow phone viewport. Record real browser/device, content size, load measurements, and rendering performance before setting final performance budgets.
 

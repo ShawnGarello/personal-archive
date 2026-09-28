@@ -1,0 +1,26 @@
+---
+import ReadingDocument from '../components/ReadingDocument.astro';
+import { fictionalDocument } from '../content/fictional-document';
+import '../styles/global.css';
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="A fictional document for the Personal Archive reading study." />
+    <title>Fictional reading study · Personal Archive</title>
+  </head>
+  <body>
+    <a class="skip-link" href="#reading">Skip to document</a>
+    <header class="site-header">
+      <p>Personal Archive</p>
+      <p>Reading study</p>
+    </header>
+    <main id="reading" tabindex="-1">
+      <ReadingDocument document={fictionalDocument} />
+    </main>
+    <footer class="site-footer"><p>Fictional content. Provisional page layout.</p></footer>
+  </body>
+</html>

@@ -1,6 +1,8 @@
 # Implementation preparation
 
-Status: plan following owner acceptance of Blender V3 on 2026-09-27. No application code is implemented. Assign one wave at a time; completion requires its evidence, not merely a commit.
+Status: plan following owner acceptance of Blender V3 on 2026-09-27. Wave 1A is implemented and locally verified, awaiting audit. Assign one wave at a time; completion requires its evidence, not merely a commit.
+
+Use the [implementation contracts](contracts/README.md) for detailed scope, steps, behavior boundaries, and acceptance evidence. [Wave 1A](contracts/wave-1a.md) now has a [verification report](reviews/wave-1a.md). Wave 1B and 1C contracts remain provisional until their dependencies have been reviewed. Contract preparation does not start implementation.
 
 ## Baseline
 
