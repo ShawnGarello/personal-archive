@@ -2,7 +2,7 @@
 
 ## Current scope
 
-- Blender V3 is the accepted storyboard baseline. Current work is implementation planning and repository preparation. Do not implement the website, install an application stack, or create production 3D assets unless the owner explicitly assigns that work.
+- Blender V3 is the accepted storyboard baseline. Wave 1A has implemented and locally verified the Astro/TypeScript reading foundation and awaits audit before integration. Wave 1B is the next unassigned wave. Do not begin further website implementation, install additional application stacks, or create production 3D assets unless the owner explicitly assigns that work.
 - Follow the task assigned to the current session. A review/audit session reviews artifacts and reports findings; it does not silently become an implementation session.
 - Resolve camera choreography and framing before detailed asset production. Concept images are design studies, not proof that a transition works.
 
@@ -36,7 +36,7 @@ For visual exploration, also read `docs/exploration.md`. Use fictional placehold
 | Camera, paper, or reading behavior | `docs/experience.md` and the V3 review notes; preserve the accepted sequence |
 | Review/audit | Assigned wave's criteria, changed files, validation evidence, and applicable decisions |
 
-Run `python scripts/check_repository.py` for repository checks. Application commands will be documented when the stack is selected. A successful repository check does not establish Blender geometry or browser behavior.
+Run `python scripts/check_repository.py` for repository checks. See [application setup](docs/application.md) for setup and application verification commands. A successful repository check does not establish Blender geometry or browser behavior.
 
 ## Git and commit attribution
 

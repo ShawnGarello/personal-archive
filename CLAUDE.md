@@ -13,7 +13,7 @@ Read and follow `AGENTS.md` at the repository root before doing any work. It is 
 
 ## Scope and privacy reminders
 
-Blender V3 is the accepted storyboard baseline. The current stage is implementation planning and repository preparation. Use the task-specific reading guide in AGENTS.md, including docs/implementation-plan.md, docs/testing.md, docs/contracts/README.md, and the assigned wave contract. Wave 1A is ready to assign; the existence of a contract does not assign it. Do not begin website implementation or production modeling without an explicit assignment. Review-only assignments stay review-only.
+Blender V3 is the accepted storyboard baseline. Wave 1A has implemented and locally verified the Astro/TypeScript reading foundation and awaits audit before integration. See [application setup](docs/application.md) for setup and verification commands. Use the task-specific reading guide in AGENTS.md, including docs/implementation-plan.md, docs/testing.md, docs/contracts/README.md, and the assigned wave contract. Wave 1B is the next unassigned wave; the existence of a contract does not assign it. Do not begin further website implementation or production modeling without an explicit assignment. Review-only assignments stay review-only.
 
 The `private/` directory and every derivative of its contents are local-only. Never commit, force-add, publish, upload, serve, or include them in a build. Never send them to an image-generation service. Public content derived from private sources requires owner approval first. Preserve original source files and work from local copies.
 
