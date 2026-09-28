@@ -94,6 +94,14 @@ Retain V2's liked cabinet composition, upright filing and extraction. The outer 
 
 V3 proposes storing the portrait folder on its long edge to preserve V2's drawer footprint, rotating it after extraction, then adding a one-second content approach. Separate versioned outputs preserve V2. The close page occupies approximately 78% of frame height. These rendered proportions and the two reading holds are review evidence, not proof of browser readability or interaction usability. See [V3 review notes](../design/blender/README-v3.md). No website implementation is authorized by this iteration.
 
+## D013: Accept V3 storyboard and prepare implementation
+
+Date: 2026-09-27. Status: accepted by the owner for integration into main.
+
+Use V3's cabinet, upright extraction, sideways outer cover, portrait documents, independent upward sheet turn, and stable content-focused reading as the implementation baseline. Acceptance covers the storyboard, not final textures, lighting, typography, content, or responsive behavior. Test a modestly closer page view in the first browser prototype rather than extending Blender exploration indefinitely.
+
+Merge the design scripts and review record; preserve local binary artifacts and the design worktree. Add inexpensive repository checks now. Add application type/lint/build checks with the app foundation, and behavior tests with the entrance/page interactions. Detailed first waves are in [implementation preparation](implementation-plan.md). Website code is not part of this integration task.
+
 ## Future entry format
 
 Record: decision, status, context, alternatives actually considered, reason, consequences, and evidence. Add dates when decisions are made. Avoid inventing retrospective experiments to justify a choice.

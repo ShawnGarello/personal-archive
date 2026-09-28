@@ -4,7 +4,9 @@ A portfolio concept built around an interactive 3D filing cabinet: open a drawer
 
 ## Status
 
-Planning and design exploration. No website implementation yet.
+Blender version 3 is the accepted storyboard baseline. Implementation planning is underway; no website implementation yet. Final visual polish and responsive reading behavior remain open.
+
+See the [Blender study and fresh-checkout instructions](design/blender/README.md). Editable scenes and videos remain local in ignored `artifacts/`; the repository contains rebuilding scripts and review notes.
 
 ## Planning documents
 
@@ -12,10 +14,12 @@ Planning and design exploration. No website implementation yet.
 - [Experience and visual brief](docs/experience.md): proposed scenes, reading layout, navigation, and accessibility behavior.
 - [Visual exploration](docs/exploration.md): directions to compare and how to choose the scene composition.
 - [Phases and waves](docs/roadmap.md): deliverables, dependencies, and completion criteria.
+- [Implementation preparation](docs/implementation-plan.md): the next waves, reading experiment, and validation requirements.
+- [Checks and CI](docs/testing.md): what runs now and when application tests will be added.
 - [Decision log](docs/decisions.md): confirmed decisions and proposals still being evaluated.
 - [Development journal](docs/devlog.md): the process, experiments, and lessons as the project develops.
 
-These documents distinguish confirmed direction from proposals. The visual design and implementation stack have not been selected.
+These documents distinguish the accepted storyboard from open visual and technical choices. The implementation stack has not been selected.
 
 Private source documents and their derivatives stay in the ignored local `private/` directory. They are excluded from the public project and must never be served or included in deployment artifacts. See [project guidance](AGENTS.md) for handling rules.
 

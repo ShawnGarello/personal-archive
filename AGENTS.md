@@ -2,7 +2,7 @@
 
 ## Current scope
 
-- The project is in visual exploration and storyboard planning. Do not implement the website, install an application stack, or create production 3D assets unless the owner explicitly requests that work.
+- Blender V3 is the accepted storyboard baseline. Current work is implementation planning and repository preparation. Do not implement the website, install an application stack, or create production 3D assets unless the owner explicitly assigns that work.
 - Follow the task assigned to the current session. A review/audit session reviews artifacts and reports findings; it does not silently become an implementation session.
 - Resolve camera choreography and framing before detailed asset production. Concept images are design studies, not proof that a transition works.
 
@@ -11,7 +11,7 @@
 - A precise, curated personal archive: cabinet, drawer, folder, pages, and Polaroid-style project previews.
 - The main entrance sequence is click-triggered. The folder moves without a visible hand; the camera approaches the drawer and follows the folder outward.
 - As the folder becomes the reading view, the cabinet leaves the composition. Frame the folder and pages against a clean white/off-white background, with no cabinet visible behind them.
-- Keep the folder visually continuous through the transition, then let the camera settle for reading. Exact movement, timing, and the treatment of any supporting surface remain storyboard decisions.
+- Keep the folder visually continuous through the transition, then let the camera settle for reading. The outer cover opens left; portrait documents turn upward around a separate top attachment. Preserve V3's accepted sequence. Exact reading distance, timing refinements, and final materials remain open.
 
 ## Private reference material
 
@@ -28,6 +28,15 @@
 Read `docs/concept.md`, `docs/experience.md`, and `docs/roadmap.md` before implementing. Keep confirmed decisions distinct from proposals and record consequential changes in `docs/decisions.md`.
 
 For visual exploration, also read `docs/exploration.md`. Use fictional placeholder content in public or externally generated studies. Preserve the private-reference rules above.
+
+| Task | Required additional reading |
+| --- | --- |
+| Implementation planning or a scoped wave | `docs/implementation-plan.md`, `docs/testing.md`, and the assigned wave's completion criteria |
+| Blender or asset changes | `design/blender/README.md`, `design/blender/README-v3.md`, and the relevant builder/checker |
+| Camera, paper, or reading behavior | `docs/experience.md` and the V3 review notes; preserve the accepted sequence |
+| Review/audit | Assigned wave's criteria, changed files, validation evidence, and applicable decisions |
+
+Run `python scripts/check_repository.py` for repository checks. Application commands will be documented when the stack is selected. A successful repository check does not establish Blender geometry or browser behavior.
 
 ## Git and commit attribution
 

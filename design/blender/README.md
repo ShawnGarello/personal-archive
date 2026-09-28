@@ -2,6 +2,19 @@
 
 **Current iteration: [version 3 review notes](README-v3.md).** V3 retains the liked V2 cabinet and extraction, adds portrait documents with an independent flexible top-edge page turn, and moves the reading camera closer. Scripts end in `_v3.py`; separate outputs live in `artifacts/archive-motion-draft/v3/`.
 
+The owner accepted V3 as the storyboard baseline on 2026-09-27. Final materials, typography, responsive behavior, and exact reading distance remain open. See the [implementation plan](../../docs/implementation-plan.md).
+
+## Fresh checkout
+
+Blender 5.1.2 is the tested version. Run the following from the repository root with Blender's executable available on your PATH (or substitute its installed absolute path):
+
+```text
+blender --background --factory-startup --python-exit-code 1 --python design/blender/rebuild_all.py
+blender --background artifacts/archive-motion-draft/v3/archive-motion-v3.blend --python-exit-code 1 --python design/blender/check_motion_v3.py
+```
+
+The first command builds V1, creates the preserved V1 path expected by V2, then builds V2 and V3. It refuses to overwrite existing source outputs. No downloaded model or private reference is required. The checker writes a report; inspect its issue lists, because its original script does not use failures as a process exit code. Use the V3 notes for optional renders. Full Blender rendering is not part of ordinary CI.
+
 [Version 2 review notes](README-v2.md), scripts and outputs remain preserved. Use each version's own rebuild commands.
 
 Version 1's `.blend`, MP4, stills, checks and script snapshots are preserved in `artifacts/archive-motion-draft/v1/`. The original unversioned outputs and the original scripts below also remain unchanged. Do not use the V1 render/package commands below for V2.

@@ -1,6 +1,6 @@
 # Archive motion draft — version 3
 
-2026-09-27. **Design proposal for owner review; not approved.** This iteration covers folder construction, reading composition and one page turn. No website implementation or production asset work.
+2026-09-27. **Accepted storyboard baseline following owner review.** This iteration covers folder construction, reading composition and one page turn. Final polish and browser behavior remain open. No website implementation or production asset work. See [implementation preparation](../../docs/implementation-plan.md).
 
 ## Open the draft
 

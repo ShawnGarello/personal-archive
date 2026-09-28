@@ -32,6 +32,12 @@ Retained V2's cabinet, file row and extraction, then rebuilt the hero folder wit
 
 The 12.25-second draft includes the entrance, a closer reading approach, a two-second first-page hold, a 1.75-second turn and a two-second second-page hold. The document occupies about 78% of frame height. Evaluated geometry checks cover all 294 frames; a small spine/tray intersection was corrected. Inspected 147 samples decoded from the final MP4 and full-resolution stills, with no obvious clipping or final-page obstruction. A fresh-session rebuild succeeded, and V2's 13 recorded artifact hashes remain unchanged. Binary outputs stay local and ignored; V3 scripts, manifest and [review notes](../design/blender/README-v3.md) are versioned separately. The next step is owner review; browser interaction and readability remain untested.
 
+## Storyboard integration and implementation preparation — 2026-09-27
+
+The owner accepted V3 as the storyboard baseline and requested integration into main before implementation planning. Preserved the distinction between the accepted motion structure and open visual polish/reading-distance choices. Updated agent reading guidance and defined three initial browser waves: foundation and readable content, entrance handoff, and reversible page interaction.
+
+Added dependency-free repository checks for tracked-file boundaries, documentation links, Python syntax, and JSON. Application checks will be added alongside the application. Added a fresh-checkout rebuild entry point that supplies the V1 source path required by later builders. Source scenes and videos remain local; no private references are published.
+
 ## Format for future milestones
 
 - Objective: what we wanted to learn or deliver.
