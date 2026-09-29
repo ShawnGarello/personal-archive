@@ -1,6 +1,6 @@
 # Implementation contracts
 
-Status: prepared on 2026-09-27. These contracts define scoped assignments and review criteria; they do not authorize an implementation session by themselves. Wave 1A is integrated and Wave 1B is implemented and locally verified, awaiting audit; refine later contracts with evidence from each reviewed wave.
+Status: prepared on 2026-09-27. These contracts define scoped assignments and review criteria; they do not authorize an implementation session by themselves. Waves 1A and 1B are integrated; Wave 1C is implemented and locally verified, awaiting audit. Refine later contracts with evidence from each reviewed wave.
 
 The [implementation plan](../implementation-plan.md) explains the build order. These contracts explain what each assignment must deliver. The accepted [V3 storyboard](../../design/blender/README-v3.md) remains the visual and motion baseline. Final materials, typography, responsive composition, and exact timing remain open.
 

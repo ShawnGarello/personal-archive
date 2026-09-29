@@ -62,6 +62,12 @@ Browser review found and fixed a phone layout where the status line intercepted 
 
 The audit found two defects. Direct access failed while the experience module was still downloading: the fallback waited for `DOMContentLoaded`, which the pending module delays. The inline script now handles direct access and the skip link until the module boots, and the module adopts that choice. The entrance also stretched under slow rendering because each frame advanced at most 0.1 s (14.9 s at 250 ms per frame; 82 s with software WebGL). The timeline now uses real time, pauses while the document is hidden, caps a single long frame, and settles into reading after three consecutive frames slower than 100 ms. Four regression tests were added; each fails on the previous commit and passes now.
 
+## Wave 1C document turn implemented - 2026-09-28
+
+Created `implement/wave-1c` in an isolated worktree from merged main (`1ac12b5`, containing Wave 1B and fix `1cfb007`). Added a second invented document, Previous/Next controls, and V3's upward turn and reverse in the browser: the exported top hinge rotates with V3's curve, and the lattice's free-edge lag is reproduced on the sheet's vertices. The text on a lifting sheet follows it and fades; the document beneath is revealed below the sheet's edge. The controller owns the committed document; turns only animate towards it. No private files were accessed.
+
+Browser review found that enlarged text and 200% zoom shrank the reading page to an unusable size (down to 2 px with both) and that wrapping controls pushed buttons off narrow screens. The controls now keep one row where possible, and reading moves to the plain layout when the page would be narrower than 16 rem. Fifteen new Playwright tests pass alongside the thirteen entrance tests, with a GPU and with software WebGL. See the [Wave 1C record](reviews/wave-1c.md). The next step is audit and review of the complete prototype; Phase 2 is not started.
+
 ## Format for future milestones
 
 - Objective: what we wanted to learn or deliver.

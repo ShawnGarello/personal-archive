@@ -134,6 +134,16 @@ Alternatives considered: (1) rebuilding the cabinet and keyframes in TypeScript 
 
 Consequences: V3 names, parents, scale, and hinge pivots are preserved and regenerable (`design/blender/export_web_v3.py`); a 669 KB GLB (125 KB gzip) is committed with a provenance manifest. The reading camera is perpendicular to the page instead of V3's ~80° tilt, so the page is an exact rectangle and the settled text is crisp. This deviation needs review. HTML text is drawn above the canvas and cannot be occluded by scene objects, which constrains the Wave 1C turn. Long documents scroll inside the page. Evidence and framing study: [Wave 1B record](reviews/wave-1b.md).
 
+## D017: Page turn with CPU sheet flex and two HTML layers
+
+Date: 2026-09-28. Status: selected within the owner's Wave 1C assignment; implementation awaits audit. Final paper materials, timing, and the small-viewport reading composition remain open.
+
+Context: Wave 1C needs V3's upward turn around the top attachment, and its reverse, in the browser, while the HTML text (drawn above the canvas since D016) stays the only readable copy and never appears over the wrong sheet.
+
+Alternatives considered: (1) a vertex shader or morph targets for the bend would need a custom material or a re-export for a 910-vertex sheet that is cheap to deform on the CPU; (2) rendering document text into a texture on the 3D sheet (SVG `foreignObject` or a canvas copy) would add a rasterized duplicate, cross-browser rendering and tainting risks, and blurry text; (3) splitting the HTML into strips, each with its own transform, would follow the curve but duplicate the document several times; (4) a CSS-only 3D flip of the HTML would not move the rendered paper. Selected: rotate the exported hinge with V3's curve and reproduce the lattice's quadratic free-edge lag on the sheet's vertices. The text on the lifting sheet rides it by the existing homography and fades out by 70°. The document beneath is clipped below the sheet's projected lowest point. `main#reading` holds the committed document; an inert, `aria-hidden`, ID-free copy supplies the other layer during the turn only.
+
+Consequences: navigation commits when accepted, so every interruption settles on one document; requests during a turn are ignored rather than queued. The camera is untouched by turns. Mid-lift the sheet shows blank paper. That is an approximation of V3, where the text bent with the sheet, and it needs visual review. The two V3 sheets support exactly two documents. The scene's reading page is replaced by the plain layout when it would be narrower than 16 rem (200% zoom, enlarged text, landscape phones). This is an accessibility fallback, not a composition decision, and it needs owner review. Details: [application setup](application.md#documents-and-page-turn-wave-1c); evidence: [Wave 1C record](reviews/wave-1c.md).
+
 ## Future entry format
 
 Record: decision, status, context, alternatives actually considered, reason, consequences, and evidence. Add dates when decisions are made. Avoid inventing retrospective experiments to justify a choice.

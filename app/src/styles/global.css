@@ -40,6 +40,10 @@ a:hover { text-decoration-thickness: 0.16em; }
 .reference-note { color: oklch(0.42 0 0); font-size: 0.875rem; }
 .skip-link { position: absolute; z-index: 10; top: 0.5rem; left: 1rem; padding: 0.75rem; background: oklch(1 0 0); transform: translateY(-200%); }
 .skip-link:focus { transform: none; }
+.visually-hidden {
+  position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; border: 0;
+  overflow: hidden; clip-path: inset(50%); white-space: nowrap;
+}
 
 @media (max-width: 40rem) {
   .document { min-height: 0; }
@@ -64,19 +68,19 @@ html[data-surface='scene'] .site-footer {
   position: fixed; left: 0; bottom: 0; z-index: 2; max-width: none; margin: 0; padding: 0.75rem 1rem;
   font-size: 0.75rem; pointer-events: none;
 }
-html[data-surface='scene']:not([data-phase='reading']) .site-footer { display: none; }
+html[data-surface='scene']:is([data-phase='loading'], [data-phase='idle'], [data-phase='entering']) .site-footer { display: none; }
 
 /* Status and controls stack at the bottom of the entrance view. */
-html[data-surface='scene']:not([data-phase='reading']) .dock {
+html[data-surface='scene']:is([data-phase='loading'], [data-phase='idle'], [data-phase='entering']) .dock {
   position: fixed; left: 1rem; right: 1rem; bottom: max(1.5rem, env(safe-area-inset-bottom)); z-index: 3;
   display: flex; flex-direction: column; align-items: center; gap: 0.75rem;
 }
-html[data-surface='scene'][data-phase='reading'] .dock { display: none; }
+html[data-surface='scene']:is([data-phase='reading'], [data-phase='turning']) .dock { display: none; }
 html[data-surface='scene'] .experience-status { margin: 0; padding: 0; text-align: center; font-size: 0.9375rem; }
-html[data-surface='scene']:not([data-phase='reading']) .entrance {
+html[data-surface='scene']:is([data-phase='loading'], [data-phase='idle'], [data-phase='entering']) .entrance {
   display: flex; flex-wrap: wrap; justify-content: center; gap: 0.75rem;
 }
-.entrance button {
+.entrance button, .document-nav button {
   font: inherit; font-size: 1rem; line-height: 1.2; min-height: 2.75rem; padding: 0.7rem 1.25rem;
   border-radius: 999px; border: 1px solid oklch(0.3 0 0); cursor: pointer;
 }
@@ -90,18 +94,60 @@ html[data-surface='scene'] .paper {
   position: fixed; left: 0; top: 0; z-index: 1; visibility: hidden;
   transform-origin: 0 0; container-type: inline-size;
 }
-html[data-surface='scene']:is([data-phase='entering'], [data-phase='reading']) .paper { visibility: visible; }
-html[data-surface='scene'][data-phase='entering'] .paper { pointer-events: none; }
+html[data-surface='scene']:is([data-phase='entering'], [data-phase='reading'], [data-phase='turning']) .paper { visibility: visible; }
+html[data-surface='scene']:is([data-phase='entering'], [data-phase='turning']) .paper { pointer-events: none; }
 /* Top 4% of the sheet stays clear of the V3 fastening straps. */
-html[data-surface='scene'] #reading {
+html[data-surface='scene'] .reading-frame {
   position: absolute; inset: 4% 0 0; max-width: none; margin: 0;
   overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin;
   /* Fade the lower edge so continuing text reads as scrollable. */
   mask-image: linear-gradient(to bottom, #000 calc(100% - 2.5rem), transparent);
 }
-html[data-surface='scene'] #reading:focus-visible { outline-offset: -3px; }
+html[data-surface='scene'] .reading-frame:focus-visible { outline-offset: -3px; }
 html[data-surface='scene'] .document {
   min-height: 0; background: transparent; padding: 5cqi 9cqi 8cqi;
 }
 html[data-surface='scene'] .document h1 { font-size: clamp(1.75rem, 6.5cqi, 2.5rem); margin-bottom: 1.5rem; }
 html[data-surface='scene'] .document h2 { font-size: clamp(1.375rem, 4.6cqi, 1.75rem); }
+
+/* Documents and navigation (Wave 1C). Until the module runs, and without
+   JavaScript, every document is shown in order and there are no controls. */
+html[data-paged] [data-document]:not([data-active]) { display: none; }
+.document-nav { display: none; }
+/* Fixed below the page on both surfaces, in one row. It is laid out (but
+   invisible) from the start so the reading camera can keep the page clear of it. */
+html[data-booted] .document-nav {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.75rem;
+  position: fixed; z-index: 3; left: 0; right: 0; bottom: max(0.75rem, env(safe-area-inset-bottom));
+  width: min(30rem, calc(100% - 2rem)); margin-inline: auto; visibility: hidden;
+}
+html[data-booted]:is([data-phase='reading'], [data-phase='turning']) .document-nav { visibility: visible; }
+.document-nav[hidden] { display: none !important; }
+.document-nav button { flex: none; padding-inline: 1.1rem; background: oklch(0.99 0 0 / 0.9); color: oklch(0.25 0 0); }
+/* Dim the label and border only, so a focus outline on an unavailable control stays at full strength. */
+.document-nav button[aria-disabled='true'] { color: oklch(0.25 0 0 / 0.45); border-color: oklch(0.3 0 0 / 0.3); cursor: default; }
+html[data-phase='turning'] .document-nav button { cursor: progress; }
+.document-position { flex: 1 1 0; min-width: 0; margin: 0; text-align: center; color: oklch(0.36 0 0); font-size: 0.9375rem; }
+@media (max-width: 40rem) {
+  /* Above the fixed fictional-content note in the scene. */
+  html[data-booted] .document-nav { bottom: max(2.25rem, env(safe-area-inset-bottom)); }
+}
+@media (max-width: 26rem) {
+  .position-word {
+    position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap;
+  }
+}
+/* Plain layout: a band behind the controls, and room so they never cover the end of the document or focus. */
+html[data-surface='flat'] .document-nav::before {
+  content: ''; position: absolute; z-index: -1; left: 50%; width: 100vw; margin-left: -50vw; top: -0.75rem; bottom: -3rem;
+  background: oklch(0.96 0 0); border-top: 1px solid oklch(0.86 0 0);
+}
+html[data-booted][data-surface='flat'] { scroll-padding-bottom: 7rem; }
+html[data-booted][data-surface='flat'] body { padding-bottom: 6rem; }
+@media (max-width: 20em) {
+  /* Very narrow or strongly enlarged text: the controls follow the document instead of covering it. */
+  html[data-booted][data-surface='flat'] .document-nav { position: static; margin-block: 1.5rem 0; }
+  html[data-booted][data-surface='flat'] .document-nav::before { content: none; }
+  html[data-booted][data-surface='flat'] { scroll-padding-bottom: 0; }
+  html[data-booted][data-surface='flat'] body { padding-bottom: 0; }
+}

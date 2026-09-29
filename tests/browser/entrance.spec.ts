@@ -23,7 +23,9 @@ async function readyWithPausedClock(page: Page): Promise<void> {
   await page.clock.install();
   await page.goto('/');
   await expect(page.locator('html')).toHaveAttribute('data-phase', 'idle', { timeout: 30_000 });
-  await page.clock.pauseAt(await page.evaluate(() => Date.now() + 100));
+  // Nothing is timed while idle, so pause well ahead: software WebGL can block
+  // the page for seconds (shader compilation) before the pause is applied.
+  await page.clock.pauseAt(await page.evaluate(() => Date.now() + 10_000));
 }
 
 async function expectSettledPage(page: Page): Promise<void> {

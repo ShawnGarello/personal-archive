@@ -2,7 +2,7 @@
 
 ## Current scope
 
-- Blender V3 is the accepted storyboard baseline. Wave 1A (Astro/TypeScript reading foundation) is integrated. Wave 1B (cabinet entrance to readable content) is implemented and locally verified on `implement/wave-1b`, awaiting audit. Wave 1C is unassigned. Do not begin further website implementation, install additional application stacks, or create production 3D assets unless the owner explicitly assigns that work.
+- Blender V3 is the accepted storyboard baseline. Waves 1A (Astro/TypeScript reading foundation) and 1B (cabinet entrance to readable content) are integrated. Wave 1C (reversible document turn and robust access) is implemented and locally verified on `implement/wave-1c`, awaiting audit. Phase 2 is unassigned. Do not begin further website implementation, install additional application stacks, or create production 3D assets unless the owner explicitly assigns that work.
 - Follow the task assigned to the current session. A review/audit session reviews artifacts and reports findings; it does not silently become an implementation session.
 - Resolve camera choreography and framing before detailed asset production. Concept images are design studies, not proof that a transition works.
 

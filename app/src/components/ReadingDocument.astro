@@ -1,11 +1,11 @@
 ---
-import type { ArchiveDocument } from '../content/fictional-document';
+import type { ArchiveDocument } from '../content/fictional-documents';
 
-interface Props { document: ArchiveDocument }
-const { document } = Astro.props;
+interface Props { document: ArchiveDocument; active: boolean }
+const { document, active } = Astro.props;
 ---
 
-<article class="document" id={document.id} aria-labelledby={`${document.id}-title`}>
+<article class="document" id={document.id} data-document={document.id} data-active={active ? '' : undefined} aria-labelledby={`${document.id}-title`}>
   <header>
     <p class="document-label">{document.label}</p>
     <h1 id={`${document.id}-title`}>{document.title}</h1>
