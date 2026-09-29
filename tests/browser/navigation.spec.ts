@@ -205,9 +205,22 @@ test('keyboard navigation in real time keeps focus on the control and text selec
   await page.keyboard.press('Shift+Tab');
   await page.keyboard.press('Shift+Tab');
   await expect(page.getByRole('link', { name: /daylighting/ })).toBeFocused();
-  await page.getByRole('heading', { level: 1, name: DOCS[1].title }).dblclick();
-  const selected = await page.evaluate(() => getSelection()?.toString().trim());
-  expect(DOCS[1].title.split(' ')).toContain(selected);
+  // Double-click the centre of the heading's longest word. The box centre (or a
+  // one-letter word) can fall on a word boundary depending on font metrics.
+  const heading = page.getByRole('heading', { level: 1, name: DOCS[1].title });
+  await heading.scrollIntoViewIfNeeded(); // Focusing the link scrolled the page to its end.
+  const word = await heading.evaluate((element) => {
+    const text = element.firstChild as Text;
+    const range = document.createRange();
+    const longest = text.data.split(' ').reduce((a, b) => (b.length > a.length ? b : a));
+    const index = text.data.indexOf(longest);
+    range.setStart(text, index);
+    range.setEnd(text, index + longest.length);
+    const rect = range.getBoundingClientRect();
+    return { x: rect.x + rect.width / 2, y: rect.y + rect.height / 2, text: range.toString() };
+  });
+  await page.mouse.dblclick(word.x, word.y);
+  expect(await page.evaluate(() => getSelection()?.toString().trim())).toBe(word.text);
 });
 
 test('each document keeps its reading position; an unvisited one opens at the top', async ({ page }) => {
@@ -287,29 +300,22 @@ test('when the scene fails to load, the plain layout navigates both ways', async
 
 test('sustained slow rendering settles a turn quickly, and later changes skip the turn', async ({ page }) => {
   await recordPhases(page);
-  await page.goto('/');
-  await expect(html(page)).toHaveAttribute('data-phase', 'idle', { timeout: 30_000 });
-  await page.getByRole('button', { name: 'Go straight to the document' }).click();
-  await expect(html(page)).toHaveAttribute('data-phase', 'reading');
-  // Simulate a device that renders about four frames per second.
-  await page.evaluate(() => {
-    const native = window.requestAnimationFrame.bind(window);
-    window.requestAnimationFrame = (callback) => native((time) => {
-      const until = performance.now() + 250;
-      while (performance.now() < until) { /* busy */ }
-      callback(time);
-    });
-  });
+  await readingWithPausedClock(page);
   const start = await transition(page);
 
+  // Three consecutive 200 ms frames (under 10 fps): each clock jump fires one frame,
+  // well inside the 1.75 s turn whatever the real renderer speed.
   await next(page).click();
-  await expect(html(page)).toHaveAttribute('data-phase', 'reading', { timeout: 5_000 });
+  await page.clock.fastForward(200);
+  await page.clock.fastForward(200);
+  await expect(html(page)).toHaveAttribute('data-phase', 'turning');
+  await page.clock.fastForward(200);
   await expectSettledOn(page, 1);
   expect(await transition(page)).toBe(start + 2); // navigate + slow settle
   await expect(next(page)).toBeFocused(); // A passive settle does not move focus.
 
   await previous(page).click();
-  await expectSettledOn(page, 0);
+  await expectSettledOn(page, 0); // Without advancing the clock: no turn.
   expect(await turns(page)).toBe(1);
 });
 

@@ -110,6 +110,15 @@ Fix: only the booted module enables paging, together with working controls. Unti
 
 Tests: the two entrance tests that hold the module download now assert that both documents are visible with no controls and no `data-paged`. After release they assert paging, document 1 current, and working Next. New tests cover a reduced-motion load with the module held, a reader scrolled to document 2 before boot (it stays current and within 2 px of its screen position, and Previous works), and a module that fails to download (all documents, no controls). With the original `c8212a9` application sources and these tests, the four held-download tests fail and the failed-download test passes; that path already recovered through the `DOMContentLoaded` fallback. All pass with the fix.
 
+## CI fix: two timing-dependent tests
+
+The first GitHub Actions run of PR #4 (Linux, software WebGL) failed 2 of 31 browser tests; application code was not at fault.
+
+- **Selection.** The test double-clicked the heading's box centre, which can land on a word boundary depending on font metrics; CI selected nothing. A local check confirmed that settled text selects: double-clicking the centre of "daylight" selected it. The test now scrolls the heading into view (focusing the document's link had scrolled it away) and double-clicks the centre of the heading's longest word, asserting that exact word.
+- **Slow rendering.** The test busy-waited 250 ms per real frame and expected three slow frames before the 1.75 s turn ended. On a slower renderer the turn finished first, so the fallback was not exercised (transition 3, not 4). It now uses the paused clock: three one-frame 200 ms jumps trigger the fallback independently of renderer speed. With slow detection disabled, the test fails.
+
+After the fix: 31 passed on the GPU (1.1 min) and with software WebGL (4.5 min) locally. Remote CI has not been re-run; the fix is committed locally but not pushed.
+
 ## Deviations for review
 
 1. **Blank sheet mid-lift.** V3 bends the text with the sheet. Here the text rides a flat mapping of the bent sheet and fades out between 40° and 70°, so the steep middle of the turn shows blank paper. The back of the sheet is blank, as in V3.
