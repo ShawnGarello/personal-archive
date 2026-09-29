@@ -10,14 +10,14 @@ This is a guard against specific accidental inclusions, not a general secret sca
 
 The application job installs locked dependencies with `npm ci`, then runs `npm run typecheck`, `npm run lint`, and `npm run build`. A browser job installs Chromium and runs `npm run test:browser`: Playwright tests of the entrance against the production build. See [application setup](application.md) for the runtime and exact local equivalents. The pipeline does not install Blender, render movies, validate external URLs, or check Markdown anchors.
 
-Browser tests assert observable state (`<html data-phase data-surface data-transition data-scene-load>`, focus, visibility, geometry of the settled page) and wait for conditions, not sleeps. Where a test must reason about time (skip, reduced-motion change), it uses Playwright's controllable clock. Hosted runners have no GPU, so WebGL runs in SwiftShader; a local software-mode run took 4.3 minutes against 34 seconds on a GPU. Remote CI results are reported only after a run is observed.
+Browser tests assert observable state (`<html data-phase data-surface data-transition data-scene-load>`, focus, visibility, geometry of the settled page) and wait for conditions, not sleeps. Where a test must reason about time (skip, repeated activation, reduced-motion change, hidden tab), it uses Playwright's controllable clock. Slow rendering is simulated by delaying each animation frame by 250 ms. Hosted runners have no GPU, so WebGL runs in SwiftShader and real-time entrances settle early through the slow-rendering path rather than completing; completion itself is exercised on GPU runs. A local software-mode run of the 13 tests took 2.4 minutes against 43 seconds on a GPU. Remote CI results are reported only after a run is observed.
 
 ## Add tests alongside their behavior
 
 | When | Automated checks to add | Manual evidence |
 | --- | --- | --- |
 | App foundation, wave 1A | Locked dependency install, type checking, linting, production build | Clean checkout setup and useful fallback content |
-| Entrance and reading, wave 1B | Implemented: keyboard and pointer activation to readable content, repeated activation, skip during entrance, load failure, missing WebGL 2, late load after direct access, reduced motion (initial and mid-entrance), resize during entrance | Compare V3 sequence and inspect content alignment |
+| Entrance and reading, wave 1B | Implemented: keyboard and pointer activation to readable content, repeated activation, skip during entrance, load failure, missing WebGL 2, late load after direct access, direct access while the module downloads, slow rendering, hidden-tab pause, reduced motion (initial and mid-entrance), resize during entrance | Compare V3 sequence and inspect content alignment |
 | Page turning and access, wave 1C | Forward/back page selection, repeated activation, keyboard, reduced motion, simulated 3D-load failure | Page flex, no obscured content, phone and enlarged-text review |
 | Complete portfolio, phase 2 | Project deep links, browser Back, focus restoration, asset/link failures | Real approved content and enlarged project media |
 | Asset/scene changes | Run the applicable Blender checks and inspect their reports locally | Representative frames and motion review after affected changes |

@@ -4,7 +4,7 @@
 export type Phase = 'loading' | 'idle' | 'entering' | 'reading';
 /** `scene`: the document sits on the 3D paper. `flat`: the plain HTML layout. */
 export type Surface = 'scene' | 'flat';
-export type Reason = 'start' | 'ready' | 'open' | 'complete' | 'direct' | 'reduced-motion' | 'failure';
+export type Reason = 'start' | 'ready' | 'open' | 'complete' | 'direct' | 'reduced-motion' | 'slow' | 'failure';
 
 export interface ExperienceState {
   readonly phase: Phase;
@@ -28,6 +28,8 @@ export interface SceneHooks {
   readonly activate: () => void;
   /** Rendering stopped working after a successful load (for example, context loss). */
   readonly fail: (error: unknown) => void;
+  /** The entrance cannot keep pace with real time on this device. */
+  readonly slow: () => void;
 }
 
 export interface ExperienceView {
@@ -46,11 +48,13 @@ export class ExperienceController {
     loadScene: (hooks: SceneHooks) => Promise<EntranceScene>;
     reducedMotion: boolean;
     sceneSupported: boolean;
+    /** The visitor already chose the plain document before this module ran. */
+    directAccess: boolean;
   }) {
     this.#view = options.view;
     this.#loadScene = options.loadScene;
     this.#reducedMotion = options.reducedMotion;
-    const direct = options.reducedMotion || !options.sceneSupported;
+    const direct = options.reducedMotion || !options.sceneSupported || options.directAccess;
     this.#state = { phase: direct ? 'reading' : 'loading', surface: direct ? 'flat' : 'scene', transitionId: 1, failed: !options.sceneSupported };
   }
 
@@ -63,6 +67,7 @@ export class ExperienceController {
     const hooks: SceneHooks = {
       activate: () => this.open(),
       fail: (error) => { if (this.#scene) this.#fail(error); },
+      slow: () => { if (this.#state.phase === 'entering') this.readNow('slow'); },
     };
     this.#loadScene(hooks).then(
       (scene) => {
@@ -96,7 +101,7 @@ export class ExperienceController {
   }
 
   /** Direct content access: while loading, or to skip the entrance. */
-  readNow(reason: 'direct' | 'reduced-motion' = 'direct'): void {
+  readNow(reason: 'direct' | 'reduced-motion' | 'slow' = 'direct'): void {
     const { phase } = this.#state;
     if (phase === 'reading') {
       this.#view.render(this.#state, reason);

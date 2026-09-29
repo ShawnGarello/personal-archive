@@ -68,9 +68,8 @@ test('keyboard activation follows the entrance to selectable, focusable text', a
 
 test('repeated pointer and keyboard activation cannot start a second entrance', async ({ page }) => {
   await recordPhases(page);
-  await page.goto('/');
+  await readyWithPausedClock(page); // Every repeat lands while the entrance is running.
   const html = page.locator('html');
-  await expect(html).toHaveAttribute('data-phase', 'idle', { timeout: 30_000 });
 
   // The top drawer of the centered cabinet is the pointer target.
   const { width, height } = page.viewportSize() ?? { width: 0, height: 0 };
@@ -85,10 +84,14 @@ test('repeated pointer and keyboard activation cannot start a second entrance', 
   await page.keyboard.press('Enter');
   await page.keyboard.press('Space');
   await page.mouse.click(width / 2, height * 0.33);
+  await page.clock.runFor(300);
+  await expect(html).toHaveAttribute('data-phase', 'entering');
   await expect(html).toHaveAttribute('data-transition', transition ?? '');
 
+  await page.clock.resume();
   await expect(html).toHaveAttribute('data-phase', 'reading', { timeout: ENTRANCE_TIMEOUT });
-  await expect(html).toHaveAttribute('data-transition', transition ?? '');
+  // Completion keeps the ID; with software WebGL the slow-rendering settle adds one.
+  expect(Number(await html.getAttribute('data-transition'))).toBeLessThanOrEqual(Number(transition) + 1);
   await expect(open).toBeHidden();
   await expectSettledPage(page);
   expect(await phaseLog(page)).toEqual(['loading', 'idle', 'entering', 'reading']);
@@ -166,6 +169,87 @@ test('direct access while loading keeps the plain document when the scene arrive
   expect(await phaseLog(page)).toEqual(['loading', 'reading']);
 });
 
+for (const control of ['button', 'skip link'] as const) {
+  test(`direct access by ${control} works while the experience module is still downloading`, async ({ page }) => {
+    const requests: string[] = [];
+    page.on('request', (request) => requests.push(request.url()));
+    let release = (): void => {};
+    const held = new Promise<void>((resolve) => { release = resolve; });
+    await page.route('**/_astro/index.astro_astro_type_script*.js', async (route) => { await held; await route.continue(); });
+    await page.goto('/', { waitUntil: 'commit' });
+    const html = page.locator('html');
+
+    await expect(html).toHaveAttribute('data-phase', 'loading');
+    if (control === 'button') {
+      await page.getByRole('button', { name: 'Go straight to the document' }).click();
+    } else {
+      await page.keyboard.press('Tab');
+      await expect(page.getByRole('link', { name: 'Skip to document' })).toBeFocused();
+      await page.keyboard.press('Enter');
+    }
+    await expect(html).toHaveAttribute('data-phase', 'reading');
+    await expect(html).toHaveAttribute('data-surface', 'flat');
+    await expect(page.locator('#reading')).toBeFocused();
+    await expect(page.getByRole('heading', { level: 1, name: TITLE })).toBeVisible();
+    expect(await html.getAttribute('data-booted')).toBeNull();
+
+    // The late module must adopt the choice: no load, no layout change.
+    release();
+    await expect(html).toHaveAttribute('data-booted', 'true');
+    await expect(html).toHaveAttribute('data-phase', 'reading');
+    await expect(html).toHaveAttribute('data-surface', 'flat');
+    expect(await html.getAttribute('data-scene-load')).toBeNull();
+    await expect(page.locator('#reading')).toBeFocused();
+    expect(requests.filter((url) => url.endsWith('.glb'))).toEqual([]);
+  });
+}
+
+test('sustained slow rendering settles into reading instead of stretching the entrance', async ({ page }) => {
+  await recordPhases(page);
+  await page.goto('/');
+  const html = page.locator('html');
+  await expect(html).toHaveAttribute('data-phase', 'idle', { timeout: 30_000 });
+  // Simulate a device that renders about four frames per second.
+  await page.evaluate(() => {
+    const native = window.requestAnimationFrame.bind(window);
+    window.requestAnimationFrame = (callback) => native((time) => {
+      const until = performance.now() + 250;
+      while (performance.now() < until) { /* busy */ }
+      callback(time);
+    });
+  });
+  const transition = Number(await html.getAttribute('data-transition'));
+
+  await page.getByRole('button', { name: 'Open the archive' }).click();
+  // Well inside the 5.75 s entrance (the old clamp took 15.6 s at 250 ms per frame).
+  await expect(html).toHaveAttribute('data-phase', 'reading', { timeout: 5_000 });
+  await expect(html).toHaveAttribute('data-transition', String(transition + 2)); // open + settle
+  await expect(page.locator('#reading')).toBeFocused();
+  await expectSettledPage(page);
+  expect(await phaseLog(page)).toEqual(['loading', 'idle', 'entering', 'reading']);
+});
+
+test('a hidden tab pauses the entrance without counting as slow rendering', async ({ page }) => {
+  await readyWithPausedClock(page);
+  const html = page.locator('html');
+  const setHidden = (hidden: boolean): Promise<void> => page.evaluate((value) => {
+    Object.defineProperty(document, 'visibilityState', { configurable: true, get: () => (value ? 'hidden' : 'visible') });
+    document.dispatchEvent(new Event('visibilitychange'));
+  }, hidden);
+
+  await page.getByRole('button', { name: 'Open the archive' }).click();
+  await page.clock.runFor(300);
+  const transition = await html.getAttribute('data-transition');
+  await setHidden(true);
+  await page.clock.runFor(10_000); // Longer than the whole entrance.
+  await expect(html).toHaveAttribute('data-phase', 'entering');
+
+  await setHidden(false);
+  await page.clock.runFor(200);
+  await expect(html).toHaveAttribute('data-phase', 'entering');
+  await expect(html).toHaveAttribute('data-transition', transition ?? '');
+});
+
 test('enabling reduced motion mid-entrance settles on the page', async ({ page }) => {
   await recordPhases(page);
   await readyWithPausedClock(page);
@@ -188,8 +272,7 @@ test('resizing during the entrance still settles an aligned page', async ({ page
   const html = page.locator('html');
   await expect(html).toHaveAttribute('data-phase', 'idle', { timeout: 30_000 });
 
-  await page.getByRole('button', { name: 'Open the archive' }).click();
-  await expect(html).toHaveAttribute('data-phase', 'entering');
+  await page.getByRole('button', { name: 'Open the archive' }).click(); // Enters synchronously.
   await page.setViewportSize({ width: 600, height: 800 });
 
   await expect(html).toHaveAttribute('data-phase', 'reading', { timeout: ENTRANCE_TIMEOUT });

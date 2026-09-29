@@ -41,8 +41,8 @@ jobs:
   browser:
     name: Browser behaviour
     runs-on: ubuntu-latest
-    # Hosted runners have no GPU: WebGL uses SwiftShader and the real-time
-    # entrance tests run slowly (about 4-5 minutes locally in software mode).
+    # Hosted runners have no GPU: WebGL uses SwiftShader, so real-time entrances
+    # settle early through the slow-rendering path (about 2.5 minutes locally).
     timeout-minutes: 25
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1

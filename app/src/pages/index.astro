@@ -17,12 +17,24 @@ import '../styles/global.css';
       (() => {
         const root = document.documentElement;
         const scene = !matchMedia('(prefers-reduced-motion: reduce)').matches && 'WebGL2RenderingContext' in window;
-        root.dataset.phase = scene ? 'loading' : 'reading';
-        root.dataset.surface = scene ? 'scene' : 'flat';
-        document.addEventListener('DOMContentLoaded', () => {
-          if (root.dataset.booted) return;
+        const readDirectly = () => {
           root.dataset.phase = 'reading';
           root.dataset.surface = 'flat';
+        };
+        root.dataset.phase = scene ? 'loading' : 'reading';
+        root.dataset.surface = scene ? 'scene' : 'flat';
+        // Direct access must not wait for the module, which may still be
+        // downloading (and delaying DOMContentLoaded). The module adopts this choice.
+        document.addEventListener('click', (event) => {
+          if (root.dataset.booted || root.dataset.phase === 'reading') return;
+          const target = event.target instanceof Element ? event.target.closest('[data-action="read"], .skip-link') : null;
+          if (!target) return;
+          event.preventDefault();
+          readDirectly();
+          document.getElementById('reading')?.focus();
+        }, true);
+        document.addEventListener('DOMContentLoaded', () => {
+          if (!root.dataset.booted) readDirectly();
         });
       })();
     </script>

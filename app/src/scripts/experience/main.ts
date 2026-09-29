@@ -6,7 +6,10 @@ import { quadTransform, type Reserve, type Viewport } from './geometry';
 import type { PaperLayout } from './scene';
 
 const root = document.documentElement;
-root.dataset.booted = 'true'; // Tells the inline fallback that this module ran.
+// The inline script may already have shown the document (direct access while
+// this module downloaded); adopt that choice instead of starting a load.
+const directAccess = root.dataset.phase === 'reading';
+root.dataset.booted = 'true'; // Tells the inline script that this module now handles input.
 
 function element<T extends HTMLElement>(selector: string): T {
   const found = document.querySelector<T>(selector);
@@ -63,7 +66,8 @@ function message(state: ExperienceState): string {
   return '';
 }
 
-const USER_REASONS: readonly Reason[] = ['open', 'complete', 'direct'];
+// A slow-device settle ends an entrance the visitor started, like completion.
+const USER_REASONS: readonly Reason[] = ['open', 'complete', 'direct', 'slow'];
 
 const view = {
   render(state: ExperienceState, reason: Reason): void {
@@ -95,6 +99,7 @@ const controller = new ExperienceController({
   view,
   reducedMotion: reduceMotion.matches,
   sceneSupported: 'WebGL2RenderingContext' in window,
+  directAccess,
   loadScene: async (hooks) => {
     // Observable load outcome for diagnostics and tests; the controller decides what it means.
     root.dataset.sceneLoad = 'pending';

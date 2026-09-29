@@ -7,10 +7,10 @@ Branch: `implement/wave-1b`, created from `origin/main` at `0f2095c` (merge of W
 ## What was built
 
 - **Scene transfer.** `design/blender/export_web_v3.py` exports the saved V3 scene to `app/src/assets/scene/archive-entrance-v3.glb` plus a provenance manifest. The export includes 97 nodes with V3 names, parents, the 0.65 folder scale, and hinge pivots. The cabinet, drawer, slides, five neighbour files, folder, portrait orientation, cover hinge, both sheet hinges and papers, fasteners, and camera are included. Page text and images, the lattice, lights, and the ground are excluded. The export carries one sampled 24 fps clip for V3 frames 18–156 (5.75 s) on 8 channels. See [D016](../decisions.md) and the [asset workflow](../application.md#scene-asset-workflow).
-- **Animation ownership.** The scene adapter (`app/src/scripts/experience/scene.ts`) drives the three.js `AnimationMixer` from one clamped timeline and computes the reading camera. `controller.ts` is the only authority over phase, surface, and transition ID. `main.ts` renders state to the DOM, owns focus, and places the paper.
+- **Animation ownership.** The scene adapter (`app/src/scripts/experience/scene.ts`) drives the three.js `AnimationMixer` from one real-time timeline and computes the reading camera. `controller.ts` is the only authority over phase, surface, and transition ID. `main.ts` renders state to the DOM, owns focus, and places the paper.
 - **Reading surface.** The Wave 1A semantic document is the only readable copy. During the cover opening it is mapped onto the paper with a CSS homography; when settled it sits untransformed over the rendered sheet, scrolls inside it, and is keyboard-focusable. The fictional content is unchanged.
 - **Access paths.** The entrance can be started with the Open button (pointer, Enter, or Space) or by clicking the top drawer. "Go straight to the document" and the skip link work while loading or during the entrance. Reduced motion, missing WebGL 2, a failed asset load, context loss, and a module that never runs all reach the plain document.
-- **Tests and CI.** Nine Playwright tests (`tests/browser/entrance.spec.ts`) and a CI browser job were added.
+- **Tests and CI.** Thirteen Playwright tests (`tests/browser/entrance.spec.ts`) and a CI browser job were added.
 
 ## Commands and results
 
@@ -37,11 +37,11 @@ blender -b C:/Users/teche/personal-archive-blender-draft/artifacts/archive-motio
 | Type check | 0 errors, 0 warnings, 0 hints |
 | Lint | Pass, zero warnings |
 | Build | Pass; one existing Vite warning that the lazy three.js chunk exceeds 500 kB |
-| Browser tests, hardware GPU (ANGLE/D3D11, Intel Iris Xe) | 9 passed in 33 s |
-| Browser tests, software WebGL (SwiftShader; the CI approximation) | 9 passed in 4.3 min |
+| Browser tests, hardware GPU (ANGLE/D3D11, Intel Iris Xe) | 13 passed in 43 s |
+| Browser tests, software WebGL (SwiftShader; the CI approximation) | 13 passed in 2.4 min |
 | Remote GitHub CI | **Not run**: no push was authorized |
 
-Isolated copy: `git checkout-index --all --prefix=C:/Users/teche/personal-archive-wave-1b-clean/` of the staged index (61 files; no dependencies, build output, artifacts, or private files), then `git init` and `git add -A` there. With a fresh npm cache, `npm ci`, the repository check, type check, lint, and `npm run test:browser` (9 passed, 36 s) all succeeded. The build emitted the same fingerprinted file names as the worktree, and the GLB hash was identical. Blender was not used.
+Isolated copy: `git checkout-index --all --prefix=C:/Users/teche/personal-archive-wave-1b-clean/` of the staged index (61 files; no dependencies, build output, artifacts, or private files), then `git init` and `git add -A` there. With a fresh npm cache, `npm ci`, the repository check, type check, lint, and `npm run test:browser` (9 passed, 36 s) all succeeded. The build emitted the same fingerprinted file names as the worktree, and the GLB hash was identical. Blender was not used. After the audit fixes, the same procedure in `C:/Users/teche/personal-archive-wave-1b-clean2` passed again, with 13 browser tests in 51 s.
 
 Asset reproducibility: `design/blender/*.py` was copied to an empty scratch directory. There, `rebuild_all.py` rebuilt V1→V3 in a fresh `--factory-startup` session, and the exporter ran against that result. Compared with the committed export (from the owner's accepted local V3 file), hierarchy, parents, node transforms, mesh bounds, triangle counts, materials, camera, and all animation samples are identical (maximum difference 0). The files are not byte-identical: 21 bevelled meshes differ by 1–10 vertices from split-normal deduplication. The comparison script is `artifacts/wave-1b/compare-glb.mjs`.
 
@@ -71,7 +71,26 @@ Unless noted, the browser was Playwright Chromium 153 on Windows using the hardw
 | Resize while reading | Screenshot and metrics | `artifacts/wave-1b/motion/resize-reading-900x700.png` |
 | Scripts | — | `artifacts/wave-1b/*.mjs`, `sheet.py` |
 
-Frame timing (real time, GPU): desktop 351 frames, median 16.7 ms, p95 16.8 ms, maximum 66.7 ms, 2 frames over 33 ms; phone 350 frames, median 16.7 ms, maximum 33.3 ms. The entrance took 5.9 s wall time against the 5.75 s clip. Under SwiftShader (1280×800), frames took about 1.3 s; the clamped timeline completed in 84 s rather than skipping.
+Frame timing (real time, GPU): desktop 351 frames, median 16.7 ms, p95 16.8 ms, maximum 66.7 ms, 2 frames over 33 ms; phone 350 frames, median 16.7 ms, maximum 33.3 ms. The entrance took 5.9 s wall time against the 5.75 s clip. Pacing under slow rendering is covered in the audit-fix section below.
+
+## Audit fixes
+
+The first audit found two defects in commit `8c74d07`; both are fixed in the follow-up commit.
+
+1. **Direct access while the module downloads.** With the experience module's download held, "Go straight to the document" and the skip link left the content hidden. The inline fallback waited for `DOMContentLoaded`, which a pending module script also delays. The inline script now handles those two controls itself until the module boots (`data-booted`). It shows `reading`/`flat` and focuses the document, and the module adopts an existing `reading` state rather than loading the scene. Regression tests hold the module download, use the button or the skip link, then release the download and assert that the late module changes nothing and requests no GLB.
+2. **Slow rendering stretched the entrance.** Each frame advanced the timeline by at most 0.1 s, so slow rendering became slow motion. The timeline now uses real elapsed time while visible. A hidden document pauses it and the gap is not counted. A single long frame advances at most 0.25 s. Three consecutive frames over 100 ms (under 10 fps) report `slow`, and the controller settles into reading with a new transition ID and document focus. Tests cover slow frames (250 ms busy-waits per frame) and a simulated hidden tab (10 s hidden, which neither completes nor settles the entrance).
+
+Pacing from the Open click to the `reading` phase, measured in the page (`artifacts/wave-1b/pacing.mjs`; results in `pacing-before.jsonl` and `pacing-after.jsonl`):
+
+| Condition, 1280×800 | Before (`8c74d07`) | After |
+| --- | --- | --- |
+| GPU, 60 fps | 5.77 s, completed | 5.77 s, completed |
+| GPU with 250 ms per frame | 14.9 s, completed in slow motion | 1.03 s, settled after 4 frames |
+| SwiftShader (~1.3 s per frame) | 82.2 s, completed in slow motion | 2.2 s, settled after 4 frames |
+
+The four new tests fail against `8c74d07` (source stashed, same tests) and pass with the fix. Two existing tests were made independent of rendering speed. The repeated-activation test now issues its repeats under a paused clock; before, a fast settle could move focus to the document between the test's own keypresses, so Space scrolled the page. The resize test no longer waits to observe `entering` before resizing; the phase changes synchronously on click.
+
+A remaining judgement call: a device that renders below 10 fps skips the entrance rather than showing a slideshow. The threshold is a proposal for review.
 
 ## Acceptance
 
@@ -80,8 +99,8 @@ Frame timing (real time, GPU): desktop 351 frames, median 16.7 ms, p95 16.8 ms, 
 | B1 | **Pass, with deviations below.** In desktop and phone playback, one activation runs: drawer opening while the camera approaches, upright lift, outward follow with rotation to portrait, cover opening left, and approach to the first page. The same folder nodes animate throughout; there are no swaps. The settled views at every size studied show only the folder on the off-white background. The cabinet sits about 6 scene units behind the reading page, beyond the ~0.9-unit half-height of the reading frustum, and its shadow falls away from the reading area. |
 | B2 | **Pass on inspection.** No intersection, teleport, or jump was visible in playback or deterministic frames. The export matches V3 transforms exactly, and V3's own collision checks applied to those transforms. This was sampled visual review, not a new collision test. |
 | B3 | **Pass.** Handoff: the heading moved 0.30 px horizontally and 0.02 px vertically between the last transformed frame and the settled page; 0.45% of paper pixels changed, all within text anti-aliasing. Settled text is untransformed, selectable (double-click selection asserted), and scrollable by Page Down, arrows, Space, and wheel. Focus lands on `main#reading` after entrance, skip, or direct access. Tab then reaches the only link and Shift+Tab leaves the page. Focus outlines are visible, and the skip link is visible over the scene. Body text contrast on the rendered paper (#dedddc) is about 11:1. |
-| B4 | **Pass (automated).** Pointer, keyboard, dispatched click, and drawer input during the entrance keep one transition ID and one `entering` phase. Skipping settles reading immediately; advancing the clock 10 s afterwards changes neither phase nor page placement. |
-| B5 | **Pass.** Automated coverage: aborted GLB, missing WebGL 2, late load after direct access, reduced motion initially and mid-entrance, and resize mid-entrance. Manual: resize while reading realigned the page at 78%; the tab-switch check is described under limits. |
+| B4 | **Pass (automated; direct access before the module runs added after audit).** Pointer, keyboard, dispatched click, and drawer input during the entrance keep one transition ID and one `entering` phase. Skipping settles reading immediately; advancing the clock 10 s afterwards changes neither phase nor page placement. |
+| B5 | **Pass.** Automated coverage: aborted GLB, missing WebGL 2, late load after direct access, direct access while the module downloads, slow rendering, hidden-tab pause, reduced motion initially and mid-entrance, and resize mid-entrance. Manual: resize while reading realigned the page at 78%; the tab-switch check is described under limits. |
 | B6 | **Recommendation below; not an approval.** |
 | B7 | **Pass locally.** A fresh checkout needs no Blender to run, build, or test; the export is reproducible with Blender as described. Remote CI is unverified. |
 
@@ -113,7 +132,7 @@ Phone: **neither ratio applies, and the result is readable but cramped.** The pa
 
 - **Visual collisions:** on phones the header text overlays the cabinet top during parts of the approach. At 86% on desktop the header and footer overlay the cover. On phones the entrance buttons sit over the lower scene during the drawer phase.
 - **Text above the canvas:** text is drawn above the canvas, so no scene object can ever occlude it. Wave 1C's upward turn must hide or move the text while the sheet flexes. While moving, text is rasterized under a 3D transform and slightly soft; it sharpens when settled.
-- **Tab resume:** checked only in headed Chromium. Playwright kept reporting `visibilityState: visible`, but frames paused while another tab was in front, and the entrance resumed and completed 3.5 s after return. A true hidden-document check on a physical browser was not performed.
+- **Tab resume:** real tab switching was checked only in headed Playwright Chromium, which never fired `visibilitychange` (it reported `visible` throughout) but throttled the background tab's frames. On the original commit the entrance paused and completed 3.5 s after return. With the audit fix, the throttled frames count as sustained slow rendering, so the entrance settled into reading while away; on return the settled page was already shown (`artifacts/wave-1b/tabresume.json`). A real hidden document (`visibilitychange` and paused frames) is covered only by the simulated-visibility test; it was not checked in a browser outside automation.
 - **Loading feedback:** loading shows only an off-white screen with "Preparing the archive…" and the controls. There is no poster image.
 - **Environment coverage:** only Chromium on Windows was tested. Firefox, Safari, physical phones, touch hardware, screen readers, enlarged text, and 200% zoom were not re-tested in the scene surface. The plain fallback is the Wave 1A layout.
 - **Study parameter:** the `framing` query parameter is a study aid that ships in the build.

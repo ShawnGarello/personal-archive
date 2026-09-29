@@ -19,6 +19,12 @@ const APPROACH = [frameTime(132), frameTime(156)] as const;
 /** The HTML text appears once the opening cover has swung clear of the page. */
 const TEXT_FADE = [frameTime(116), frameTime(130)] as const;
 const BACKGROUND = new Color('#f4f3ef');
+/** Frames longer than this (under 10 fps) count as slow rendering. */
+const SLOW_FRAME = 0.1;
+/** This many consecutive slow frames settle into reading; one hitch does not. */
+const SLOW_FRAMES_TO_SETTLE = 3;
+/** Largest timeline advance for a single frame, in seconds. */
+const MAX_STEP = 0.25;
 
 export type PaperLayout =
   | { readonly kind: 'moving'; readonly quad: Quad | null; readonly settled: Rect; readonly opacity: number }
@@ -113,6 +119,7 @@ async function build(renderer: WebGLRenderer, options: SceneOptions): Promise<En
   let frame = 0;
   let last = 0;
   let done: (() => void) | null = null;
+  let slowFrames = 0;
 
   const sample = (time: number): void => {
     action.paused = false;
@@ -188,9 +195,23 @@ async function build(renderer: WebGLRenderer, options: SceneOptions): Promise<En
 
   const tick = (now: number): void => {
     if (!running) return;
-    // Clamp long gaps (background tab, slow frame): resume rather than jump or stall.
-    elapsed += last ? Math.min((now - last) / 1000, 0.1) : 0;
+    if (document.visibilityState === 'hidden') {
+      // Background tab: pause, and do not count the gap when visible again.
+      last = 0;
+      frame = requestAnimationFrame(tick);
+      return;
+    }
+    // Foreground time is real time. A single long gap (window occluded, a
+    // hitch) is capped so the motion resumes instead of jumping; sustained
+    // slow rendering hands over to reading instead of stretching the entrance.
+    const step = last ? (now - last) / 1000 : 0;
     last = now;
+    slowFrames = step > SLOW_FRAME ? slowFrames + 1 : 0;
+    if (slowFrames >= SLOW_FRAMES_TO_SETTLE) {
+      options.slow(); // The controller settles the scene and changes phase.
+      return;
+    }
+    elapsed += Math.min(step, MAX_STEP);
     pose(elapsed);
     if (elapsed >= duration) {
       running = false;
@@ -214,11 +235,13 @@ async function build(renderer: WebGLRenderer, options: SceneOptions): Promise<En
   const onMove = (event: PointerEvent): void => { canvas.style.cursor = overDrawer(event) ? 'pointer' : ''; };
   const onClick = (event: MouseEvent): void => { if (overDrawer(event)) options.activate(); };
   const onContextLost = (event: Event): void => { event.preventDefault(); options.fail(new Error('WebGL context lost')); };
+  const onVisibility = (): void => { last = 0; };
 
   window.addEventListener('resize', resize);
   canvas.addEventListener('pointermove', onMove);
   canvas.addEventListener('click', onClick);
   canvas.addEventListener('webglcontextlost', onContextLost);
+  document.addEventListener('visibilitychange', onVisibility);
   resize();
   renderer.compile(scene, camera);
 
@@ -234,6 +257,7 @@ async function build(renderer: WebGLRenderer, options: SceneOptions): Promise<En
       running = true;
       done = finished;
       last = 0;
+      slowFrames = 0;
       canvas.style.cursor = '';
       frame = requestAnimationFrame(tick);
     },
@@ -249,6 +273,7 @@ async function build(renderer: WebGLRenderer, options: SceneOptions): Promise<En
       canvas.removeEventListener('pointermove', onMove);
       canvas.removeEventListener('click', onClick);
       canvas.removeEventListener('webglcontextlost', onContextLost);
+      document.removeEventListener('visibilitychange', onVisibility);
       scene.traverse((object) => {
         const mesh = object as Mesh;
         if (!mesh.isMesh) return;
