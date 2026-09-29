@@ -68,6 +68,10 @@ Created `implement/wave-1c` in an isolated worktree from merged main (`1ac12b5`,
 
 Browser review found that enlarged text and 200% zoom shrank the reading page to an unusable size (down to 2 px with both) and that wrapping controls pushed buttons off narrow screens. The controls now keep one row where possible, and reading moves to the plain layout when the page would be narrower than 16 rem. Fifteen new Playwright tests pass alongside the thirteen entrance tests, with a GPU and with software WebGL. See the [Wave 1C record](reviews/wave-1c.md). The next step is audit and review of the complete prototype; Phase 2 is not started.
 
+## Wave 1C audit fix - 2026-09-28
+
+The audit found that the inline script paged the documents before the module's navigation existed, so a stalled module download after direct access or with reduced motion left the second document unreachable. Paging now starts only when the booted module adds working controls, on the document the reader is already using. Before that every document is shown in order. The extended and new download tests fail on the audited commit and pass now; the [Wave 1C record](reviews/wave-1c.md) has details.
+
 ## Format for future milestones
 
 - Objective: what we wanted to learn or deliver.

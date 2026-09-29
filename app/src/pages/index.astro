@@ -23,8 +23,6 @@ import '../styles/global.css';
         };
         root.dataset.phase = scene ? 'loading' : 'reading';
         root.dataset.surface = scene ? 'scene' : 'flat';
-        // One document at a time; the module adds the navigation controls.
-        root.dataset.paged = '';
         // Direct access must not wait for the module, which may still be
         // downloading (and delaying DOMContentLoaded). The module adopts this choice.
         document.addEventListener('click', (event) => {
@@ -35,10 +33,9 @@ import '../styles/global.css';
           readDirectly();
           document.getElementById('reading')?.focus();
         }, true);
+        // Every document stays visible in order until the module's navigation works.
         document.addEventListener('DOMContentLoaded', () => {
-          if (root.dataset.booted) return;
-          readDirectly();
-          delete root.dataset.paged; // Without the module, show every document in order.
+          if (!root.dataset.booted) readDirectly();
         });
       })();
     </script>

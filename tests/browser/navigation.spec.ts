@@ -373,8 +373,66 @@ test('a viewport too small for readable text on the paper reads in the plain lay
   await expectSettledOn(page, 0);
 });
 
+/** Hold the experience module's download until `release` (a stalled script). */
+async function holdModule(page: Page): Promise<() => void> {
+  let release = (): void => {};
+  const held = new Promise<void>((resolve) => { release = resolve; });
+  await page.route('**/_astro/index.astro_astro_type_script*.js', async (route) => { await held; await route.continue(); });
+  return release;
+}
+
+/** Before the module boots, every document is readable and there are no controls. */
+async function expectAllDocumentsWithoutControls(page: Page): Promise<void> {
+  for (const doc of DOCS) await expect(page.getByRole('heading', { level: 1, name: doc.title })).toBeVisible();
+  await expect(page.getByRole('navigation', { name: 'Documents' })).toBeHidden();
+  expect(await html(page).getAttribute('data-paged')).toBeNull();
+}
+
+test('a reader already on the second document before the module boots stays on it', async ({ page }) => {
+  const release = await holdModule(page);
+  await page.goto('/', { waitUntil: 'commit' });
+  await expect(html(page)).toHaveAttribute('data-phase', 'loading');
+  await page.getByRole('button', { name: 'Go straight to the document' }).click();
+  await expect(html(page)).toHaveAttribute('data-surface', 'flat');
+  await expectAllDocumentsWithoutControls(page);
+
+  const heading = page.getByRole('heading', { level: 1, name: DOCS[1].title });
+  await heading.evaluate((element) => element.scrollIntoView({ block: 'start' }));
+  const before = await heading.boundingBox();
+  release();
+  await expect(html(page)).toHaveAttribute('data-booted', 'true');
+  await expectSettledOn(page, 1);
+  // Paging hid the first document without moving the one being read.
+  const after = await heading.boundingBox();
+  expect(Math.abs((after?.y ?? 0) - (before?.y ?? 0))).toBeLessThan(2);
+  await previous(page).click();
+  await expectSettledOn(page, 0);
+});
+
+test('a module that fails to download leaves every document readable without dead controls', async ({ page }) => {
+  await page.route('**/_astro/index.astro_astro_type_script*.js', (route) => route.abort());
+  await page.goto('/');
+  await expect(html(page)).toHaveAttribute('data-phase', 'reading');
+  await expect(html(page)).toHaveAttribute('data-surface', 'flat');
+  await expectAllDocumentsWithoutControls(page);
+});
+
 test.describe('with reduced motion preferred', () => {
   test.use({ reducedMotion: 'reduce' });
+
+  test('every document is readable while the module downloads, then navigation takes over', async ({ page }) => {
+    const release = await holdModule(page);
+    await page.goto('/', { waitUntil: 'commit' });
+    await expect(html(page)).toHaveAttribute('data-phase', 'reading');
+    await expect(html(page)).toHaveAttribute('data-surface', 'flat');
+    await expectAllDocumentsWithoutControls(page);
+
+    release();
+    await expect(html(page)).toHaveAttribute('data-booted', 'true');
+    await expectSettledOn(page, 0);
+    await next(page).click();
+    await expectSettledOn(page, 1);
+  });
 
   test('documents change instantly on the plain layout', async ({ page }) => {
     await recordPhases(page);

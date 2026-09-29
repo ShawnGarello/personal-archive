@@ -261,12 +261,37 @@ function sceneFits(): boolean {
 
 nav.hidden = articles.length < 2;
 
+/**
+ * Until now every document was shown in order: the inline script's direct
+ * access and reduced-motion layouts must not hide content behind controls that
+ * do not exist yet. Show one document at a time from here, starting on the one
+ * the reader is using (holding focus, or else at the top of the window), and
+ * keep it where it was on screen.
+ */
+function startPaging(): number {
+  // Only the plain layout has shown the documents; the scene always opens on the first.
+  const shown = root.dataset.surface === 'flat';
+  let index = shown ? articles.findIndex((article) => article.contains(document.activeElement)) : 0;
+  if (index < 0) {
+    const line = window.innerHeight / 3;
+    index = Math.max(0, articles.findLastIndex((article) => article.getBoundingClientRect().top <= line));
+  }
+  const screenTop = articles[index]?.getBoundingClientRect().top ?? 0;
+  root.dataset.paged = '';
+  showInReading(index);
+  if (shown && index > 0) {
+    window.scrollTo(0, (articles[index]?.getBoundingClientRect().top ?? 0) + window.scrollY - screenTop);
+  }
+  return index;
+}
+
 const controller = new ExperienceController({
   view,
   reducedMotion: reduceMotion.matches,
   sceneSupported: 'WebGL2RenderingContext' in window,
   directAccess,
   documentCount: articles.length,
+  document: startPaging(),
   sceneFits: sceneFits(),
   loadScene: async (hooks) => {
     // Observable load outcome for diagnostics and tests; the controller decides what it means.

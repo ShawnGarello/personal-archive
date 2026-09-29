@@ -67,6 +67,8 @@ export class ExperienceController {
     /** The visitor already chose the plain document before this module ran. */
     directAccess: boolean;
     documentCount: number;
+    /** Document to start on (the reader may already have reached it before this module ran). */
+    document: number;
     sceneFits: boolean;
   }) {
     this.#view = options.view;
@@ -77,7 +79,7 @@ export class ExperienceController {
     const direct = options.reducedMotion || !options.sceneSupported || options.directAccess;
     this.#state = {
       phase: direct ? 'reading' : 'loading', surface: direct ? 'flat' : 'scene',
-      transitionId: 1, failed: !options.sceneSupported, document: 0,
+      transitionId: 1, failed: !options.sceneSupported, document: options.document,
     };
   }
 
