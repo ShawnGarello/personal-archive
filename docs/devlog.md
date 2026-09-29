@@ -52,6 +52,16 @@ After the owner resolved a disk-space blocker, installed the selected local Node
 
 Inspected Chromium screenshots at desktop, 390px phone width, actual 200% browser zoom, and enlarged text. Verified keyboard skip/link navigation, visible focus, text copy, and JavaScript-disabled reading. The output is one HTML file with inline CSS and no client JavaScript. See the [Wave 1A record](reviews/wave-1a.md) for exact evidence and limitations. Remote CI, other browser engines, physical devices, and screen readers remain untested. The next step is audit before integration; Wave 1B is unassigned.
 
+## Wave 1B entrance implemented - 2026-09-28
+
+Created `implement/wave-1b` in an isolated worktree from merged main (`0f2095c`, containing Wave 1A and correction `3655a6a`). Added a Blender export script for the V3 entrance objects and animation. Implemented a three.js scene adapter, one experience controller, and a reading view that maps the existing semantic document onto the paper during the cover opening and settles it untransformed. No private files were accessed; content remains the Wave 1A fiction.
+
+Browser review found and fixed a phone layout where the status line intercepted taps on Open, and a skip link hidden beneath the canvas. It also corrected tone mapping and lighting to approach V3's muted materials and soft shadows. Nine Playwright behaviour tests pass with a GPU and with software WebGL. On an integrated GPU the entrance runs at 60 fps. The framing study, deviations, and open phone composition question are recorded in the [Wave 1B record](reviews/wave-1b.md). The next step is audit; Wave 1C is not started.
+
+## Wave 1B audit fixes - 2026-09-28
+
+The audit found two defects. Direct access failed while the experience module was still downloading: the fallback waited for `DOMContentLoaded`, which the pending module delays. The inline script now handles direct access and the skip link until the module boots, and the module adopts that choice. The entrance also stretched under slow rendering because each frame advanced at most 0.1 s (14.9 s at 250 ms per frame; 82 s with software WebGL). The timeline now uses real time, pauses while the document is hidden, caps a single long frame, and settles into reading after three consecutive frames slower than 100 ms. Four regression tests were added; each fails on the previous commit and passes now.
+
 ## Format for future milestones
 
 - Objective: what we wanted to learn or deliver.

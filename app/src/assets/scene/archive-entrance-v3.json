@@ -1,0 +1,427 @@
+{
+  "asset": "archive-entrance-v3.glb",
+  "bytes": 668780,
+  "sha256": "00f0567c00b16b0105bfe089b280ddfec19bd4ce42b2b30992b371b97911d2cd",
+  "source": {
+    "scene": "Archive_Motion_V3",
+    "blend": "artifacts/archive-motion-draft/v3/archive-motion-v3.blend (local, rebuildable)",
+    "builders": [
+      "design/blender/rebuild_all.py",
+      "design/blender/build_archive_v3.py"
+    ],
+    "exporter": "design/blender/export_web_v3.py",
+    "blender": "5.1.2"
+  },
+  "frames": {
+    "first": 18,
+    "last": 156,
+    "fps": 24,
+    "clip_seconds": 5.75
+  },
+  "coordinates": "glTF Y-up metres-as-Blender-units: Blender (x, y, z) -> glTF (x, z, -y). Scale unchanged.",
+  "excluded": [
+    "page text and image placeholders (HTML supplies content)",
+    "PAGE FLEX lattice (paper at rest)",
+    "lights",
+    "Seamless pale ground"
+  ],
+  "simplified": "Label text exported flat (extrude 0) at curve resolution 3; geometry otherwise as evaluated at frame 18 with modifiers applied.",
+  "animated_nodes": [
+    "V3 | CAMERA | follow and settle",
+    "V3 | COVER | left spine hinge",
+    "V3 | DRAWER | slide Y",
+    "V3 | FOLDER | continuous hero",
+    "V3 | FOLDER | portrait orientation",
+    "V3 | SLIDES | telescoping intermediate"
+  ],
+  "nodes": [
+    {
+      "name": "V3 | Cabinet crown",
+      "parent": "V3 | CABINET | fixed assembly"
+    },
+    {
+      "name": "V3 | Cabinet left side",
+      "parent": "V3 | CABINET | fixed assembly"
+    },
+    {
+      "name": "V3 | Cabinet plinth",
+      "parent": "V3 | CABINET | fixed assembly"
+    },
+    {
+      "name": "V3 | Cabinet rear",
+      "parent": "V3 | CABINET | fixed assembly"
+    },
+    {
+      "name": "V3 | Cabinet right side",
+      "parent": "V3 | CABINET | fixed assembly"
+    },
+    {
+      "name": "V3 | Lower drawer face",
+      "parent": "V3 | CABINET | fixed assembly"
+    },
+    {
+      "name": "V3 | Lower drawer handle mount",
+      "parent": "V3 | CABINET | fixed assembly"
+    },
+    {
+      "name": "V3 | Lower drawer handle mount.001",
+      "parent": "V3 | CABINET | fixed assembly"
+    },
+    {
+      "name": "V3 | Lower drawer label",
+      "parent": "V3 | CABINET | fixed assembly"
+    },
+    {
+      "name": "V3 | Lower drawer label frame",
+      "parent": "V3 | CABINET | fixed assembly"
+    },
+    {
+      "name": "V3 | Lower drawer label text",
+      "parent": "V3 | CABINET | fixed assembly"
+    },
+    {
+      "name": "V3 | Lower drawer pull",
+      "parent": "V3 | CABINET | fixed assembly"
+    },
+    {
+      "name": "V3 | Middle drawer face",
+      "parent": "V3 | CABINET | fixed assembly"
+    },
+    {
+      "name": "V3 | Middle drawer handle mount",
+      "parent": "V3 | CABINET | fixed assembly"
+    },
+    {
+      "name": "V3 | Middle drawer handle mount.001",
+      "parent": "V3 | CABINET | fixed assembly"
+    },
+    {
+      "name": "V3 | Middle drawer label",
+      "parent": "V3 | CABINET | fixed assembly"
+    },
+    {
+      "name": "V3 | Middle drawer label frame",
+      "parent": "V3 | CABINET | fixed assembly"
+    },
+    {
+      "name": "V3 | Middle drawer label text",
+      "parent": "V3 | CABINET | fixed assembly"
+    },
+    {
+      "name": "V3 | Middle drawer pull",
+      "parent": "V3 | CABINET | fixed assembly"
+    },
+    {
+      "name": "V3 | Rubber foot",
+      "parent": "V3 | CABINET | fixed assembly"
+    },
+    {
+      "name": "V3 | Rubber foot.001",
+      "parent": "V3 | CABINET | fixed assembly"
+    },
+    {
+      "name": "V3 | Rubber foot.002",
+      "parent": "V3 | CABINET | fixed assembly"
+    },
+    {
+      "name": "V3 | Rubber foot.003",
+      "parent": "V3 | CABINET | fixed assembly"
+    },
+    {
+      "name": "V3 | Stationary slide",
+      "parent": "V3 | CABINET | fixed assembly"
+    },
+    {
+      "name": "V3 | Stationary slide.001",
+      "parent": "V3 | CABINET | fixed assembly"
+    },
+    {
+      "name": "V3 | CABINET | fixed assembly",
+      "parent": null
+    },
+    {
+      "name": "V3 | Active drawer face",
+      "parent": "V3 | DRAWER | slide Y"
+    },
+    {
+      "name": "V3 | Active drawer handle mount",
+      "parent": "V3 | DRAWER | slide Y"
+    },
+    {
+      "name": "V3 | Active drawer handle mount.001",
+      "parent": "V3 | DRAWER | slide Y"
+    },
+    {
+      "name": "V3 | Active drawer label",
+      "parent": "V3 | DRAWER | slide Y"
+    },
+    {
+      "name": "V3 | Active drawer label frame",
+      "parent": "V3 | DRAWER | slide Y"
+    },
+    {
+      "name": "V3 | Active drawer label text",
+      "parent": "V3 | DRAWER | slide Y"
+    },
+    {
+      "name": "V3 | Active drawer pull",
+      "parent": "V3 | DRAWER | slide Y"
+    },
+    {
+      "name": "V3 | Active tray bottom",
+      "parent": "V3 | DRAWER | slide Y"
+    },
+    {
+      "name": "V3 | Active tray rear",
+      "parent": "V3 | DRAWER | slide Y"
+    },
+    {
+      "name": "V3 | Active tray side",
+      "parent": "V3 | DRAWER | slide Y"
+    },
+    {
+      "name": "V3 | Active tray side.001",
+      "parent": "V3 | DRAWER | slide Y"
+    },
+    {
+      "name": "V3 | Extended slide",
+      "parent": "V3 | DRAWER | slide Y"
+    },
+    {
+      "name": "V3 | Extended slide.001",
+      "parent": "V3 | DRAWER | slide Y"
+    },
+    {
+      "name": "V3 | Neighbor 00 back",
+      "parent": "V3 | Neighbor 01"
+    },
+    {
+      "name": "V3 | Neighbor 00 front",
+      "parent": "V3 | Neighbor 01"
+    },
+    {
+      "name": "V3 | Neighbor 00 index",
+      "parent": "V3 | Neighbor 01"
+    },
+    {
+      "name": "V3 | Neighbor 00 pages",
+      "parent": "V3 | Neighbor 01"
+    },
+    {
+      "name": "V3 | Neighbor 00 tab",
+      "parent": "V3 | Neighbor 01"
+    },
+    {
+      "name": "V3 | Neighbor 01",
+      "parent": "V3 | NEIGHBORS | retained files"
+    },
+    {
+      "name": "V3 | Neighbor 01 back",
+      "parent": "V3 | Neighbor 02"
+    },
+    {
+      "name": "V3 | Neighbor 01 front",
+      "parent": "V3 | Neighbor 02"
+    },
+    {
+      "name": "V3 | Neighbor 01 index",
+      "parent": "V3 | Neighbor 02"
+    },
+    {
+      "name": "V3 | Neighbor 01 pages",
+      "parent": "V3 | Neighbor 02"
+    },
+    {
+      "name": "V3 | Neighbor 01 tab",
+      "parent": "V3 | Neighbor 02"
+    },
+    {
+      "name": "V3 | Neighbor 02",
+      "parent": "V3 | NEIGHBORS | retained files"
+    },
+    {
+      "name": "V3 | Neighbor 02 back",
+      "parent": "V3 | Neighbor 03"
+    },
+    {
+      "name": "V3 | Neighbor 02 front",
+      "parent": "V3 | Neighbor 03"
+    },
+    {
+      "name": "V3 | Neighbor 02 index",
+      "parent": "V3 | Neighbor 03"
+    },
+    {
+      "name": "V3 | Neighbor 02 pages",
+      "parent": "V3 | Neighbor 03"
+    },
+    {
+      "name": "V3 | Neighbor 02 tab",
+      "parent": "V3 | Neighbor 03"
+    },
+    {
+      "name": "V3 | Neighbor 03",
+      "parent": "V3 | NEIGHBORS | retained files"
+    },
+    {
+      "name": "V3 | Neighbor 03 back",
+      "parent": "V3 | Neighbor 04"
+    },
+    {
+      "name": "V3 | Neighbor 03 front",
+      "parent": "V3 | Neighbor 04"
+    },
+    {
+      "name": "V3 | Neighbor 03 index",
+      "parent": "V3 | Neighbor 04"
+    },
+    {
+      "name": "V3 | Neighbor 03 pages",
+      "parent": "V3 | Neighbor 04"
+    },
+    {
+      "name": "V3 | Neighbor 03 tab",
+      "parent": "V3 | Neighbor 04"
+    },
+    {
+      "name": "V3 | Neighbor 04",
+      "parent": "V3 | NEIGHBORS | retained files"
+    },
+    {
+      "name": "V3 | Neighbor 04 back",
+      "parent": "V3 | Neighbor 05"
+    },
+    {
+      "name": "V3 | Neighbor 04 front",
+      "parent": "V3 | Neighbor 05"
+    },
+    {
+      "name": "V3 | Neighbor 04 index",
+      "parent": "V3 | Neighbor 05"
+    },
+    {
+      "name": "V3 | Neighbor 04 pages",
+      "parent": "V3 | Neighbor 05"
+    },
+    {
+      "name": "V3 | Neighbor 04 tab",
+      "parent": "V3 | Neighbor 05"
+    },
+    {
+      "name": "V3 | Neighbor 05",
+      "parent": "V3 | NEIGHBORS | retained files"
+    },
+    {
+      "name": "V3 | NEIGHBORS | retained files",
+      "parent": "V3 | DRAWER | slide Y"
+    },
+    {
+      "name": "V3 | DRAWER | slide Y",
+      "parent": null
+    },
+    {
+      "name": "V3 | Cover eyebrow",
+      "parent": "V3 | COVER | left spine hinge"
+    },
+    {
+      "name": "V3 | Cover index",
+      "parent": "V3 | COVER | left spine hinge"
+    },
+    {
+      "name": "V3 | Cover label",
+      "parent": "V3 | COVER | left spine hinge"
+    },
+    {
+      "name": "V3 | Cover title",
+      "parent": "V3 | COVER | left spine hinge"
+    },
+    {
+      "name": "V3 | Outer cover",
+      "parent": "V3 | COVER | left spine hinge"
+    },
+    {
+      "name": "V3 | COVER | left spine hinge",
+      "parent": "V3 | FOLDER | portrait orientation"
+    },
+    {
+      "name": "V3 | Folder back",
+      "parent": "V3 | FOLDER | portrait orientation"
+    },
+    {
+      "name": "V3 | Folder spine",
+      "parent": "V3 | FOLDER | portrait orientation"
+    },
+    {
+      "name": "V3 | Page 01 paper",
+      "parent": "V3 | PAGE 01 | top attachment hinge"
+    },
+    {
+      "name": "V3 | PAGE 01 | top attachment hinge",
+      "parent": "V3 | FOLDER | portrait orientation"
+    },
+    {
+      "name": "V3 | Page 02 paper",
+      "parent": "V3 | PAGE 02 | fixed document"
+    },
+    {
+      "name": "V3 | PAGE 02 | fixed document",
+      "parent": "V3 | FOLDER | portrait orientation"
+    },
+    {
+      "name": "V3 | Paper stack lower edge",
+      "parent": "V3 | FOLDER | portrait orientation"
+    },
+    {
+      "name": "V3 | Paper stack middle edge",
+      "parent": "V3 | FOLDER | portrait orientation"
+    },
+    {
+      "name": "V3 | Portfolio tab",
+      "parent": "V3 | FOLDER | portrait orientation"
+    },
+    {
+      "name": "V3 | Tab label",
+      "parent": "V3 | FOLDER | portrait orientation"
+    },
+    {
+      "name": "V3 | Top fastener base",
+      "parent": "V3 | FOLDER | portrait orientation"
+    },
+    {
+      "name": "V3 | Top fastener base.001",
+      "parent": "V3 | FOLDER | portrait orientation"
+    },
+    {
+      "name": "V3 | Top fastener strap",
+      "parent": "V3 | FOLDER | portrait orientation"
+    },
+    {
+      "name": "V3 | Top fastener strap.001",
+      "parent": "V3 | FOLDER | portrait orientation"
+    },
+    {
+      "name": "V3 | FOLDER | portrait orientation",
+      "parent": "V3 | FOLDER | continuous hero"
+    },
+    {
+      "name": "V3 | FOLDER | continuous hero",
+      "parent": null
+    },
+    {
+      "name": "V3 | CAMERA | follow and settle",
+      "parent": null
+    },
+    {
+      "name": "V3 | Intermediate slide",
+      "parent": "V3 | SLIDES | telescoping intermediate"
+    },
+    {
+      "name": "V3 | Intermediate slide.001",
+      "parent": "V3 | SLIDES | telescoping intermediate"
+    },
+    {
+      "name": "V3 | SLIDES | telescoping intermediate",
+      "parent": null
+    }
+  ]
+}

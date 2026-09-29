@@ -124,6 +124,16 @@ Official guidance checked during selection: [Astro installation](https://docs.as
 
 The appearance remains provisional: a white portrait surface on a pale neutral surround, system fonts, underlined links, and natural scrolling. No final palette or typography decision is implied. No private source or derivatives informed the invented content.
 
+## D016: Exported V3 entrance with HTML mapped onto the paper
+
+Date: 2026-09-28. Status: selected within the owner's Wave 1B assignment; implementation awaits audit. Final framing, materials, and phone composition remain open.
+
+Context: Wave 1B needs the accepted V3 motion in the browser and the Wave 1A document on the settled paper, without duplicate or rasterized readable text.
+
+Alternatives considered: (1) rebuilding the cabinet and keyframes in TypeScript avoids a binary asset, but must re-derive V1-to-V2 scaling and Blender's auto-clamped Bézier curves by hand, which risks drift from the accepted motion; (2) exporting everything, including page text, would ship non-semantic text meshes; (3) rendering the HTML into a texture would duplicate the readable copy and blur text. Selected: a scripted Blender glTF export of the cabinet, drawer, folder, cover and sheet transforms, and the camera, with V3's sampled animation for frames 18–156. The browser adds lights, a shadow-only floor, and a viewport-specific reading camera. three.js 0.186 renders; its `AnimationMixer` is driven by one adapter-owned timeline. The same semantic document is mapped onto the paper with a CSS homography while moving and placed untransformed when settled.
+
+Consequences: V3 names, parents, scale, and hinge pivots are preserved and regenerable (`design/blender/export_web_v3.py`); a 669 KB GLB (125 KB gzip) is committed with a provenance manifest. The reading camera is perpendicular to the page instead of V3's ~80° tilt, so the page is an exact rectangle and the settled text is crisp. This deviation needs review. HTML text is drawn above the canvas and cannot be occluded by scene objects, which constrains the Wave 1C turn. Long documents scroll inside the page. Evidence and framing study: [Wave 1B record](reviews/wave-1b.md).
+
 ## Future entry format
 
 Record: decision, status, context, alternatives actually considered, reason, consequences, and evidence. Add dates when decisions are made. Avoid inventing retrospective experiments to justify a choice.

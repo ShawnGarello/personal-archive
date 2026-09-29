@@ -4,7 +4,7 @@ A portfolio concept built around an interactive 3D filing cabinet: open a drawer
 
 ## Status
 
-Blender version 3 is the accepted storyboard baseline. Wave 1A adds a locally verified static fictional reading study and awaits audit before integration; cabinet, camera, and page-turn implementation remain unassigned. See the [Wave 1A report](docs/reviews/wave-1a.md). Final visual polish remains open.
+Blender version 3 is the accepted storyboard baseline. Wave 1A added a static fictional reading study. Wave 1B adds the browser entrance from the cabinet to that document and awaits audit; page turns remain unassigned. See the [Wave 1A](docs/reviews/wave-1a.md) and [Wave 1B](docs/reviews/wave-1b.md) reports. Final visual polish remains open.
 
 ## Run the reading study
 
@@ -33,7 +33,7 @@ See the [Blender study and fresh-checkout instructions](design/blender/README.md
 - [Decision log](docs/decisions.md): confirmed decisions and proposals still being evaluated.
 - [Development journal](docs/devlog.md): the process, experiments, and lessons as the project develops.
 
-These documents distinguish the accepted storyboard from open visual and technical choices. Wave 1A selects Astro, TypeScript, and plain CSS for static delivery; no 3D dependency is installed.
+These documents distinguish the accepted storyboard from open visual and technical choices. Wave 1A selected Astro, TypeScript, and plain CSS for static delivery; Wave 1B adds three.js for the entrance scene.
 
 Private source documents and their derivatives stay in the ignored local `private/` directory. They are excluded from the public project and must never be served or included in deployment artifacts. See [project guidance](AGENTS.md) for handling rules.
 
