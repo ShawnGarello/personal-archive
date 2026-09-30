@@ -144,6 +144,20 @@ Alternatives considered: (1) a vertex shader or morph targets for the bend would
 
 Consequences: navigation commits when accepted, so every interruption settles on one document; requests during a turn are ignored rather than queued. The camera is untouched by turns. Mid-lift the sheet shows blank paper. That is an approximation of V3, where the text bent with the sheet, and it needs visual review. The two V3 sheets support exactly two documents. The scene's reading page is replaced by the plain layout when it would be narrower than 16 rem (200% zoom, enlarged text, landscape phones). This is an accessibility fallback, not a composition decision, and it needs owner review. Details: [application setup](application.md#documents-and-page-turn-wave-1c); evidence: [Wave 1C record](reviews/wave-1c.md).
 
+## D018: Cabinet entrance study (faster approach, idle orbit, charcoal stage)
+
+Date: 2026-09-30. Status: **proposal on `experiment/cabinet-entrance`, awaiting owner review**. It does not change V3's accepted sequence on `main`, and it is separate from Phase 2 content.
+
+Context: the owner asked for a faster-feeling camera approach, a restrained mouse orbit while the cabinet is idle, and a charcoal, spotlit entrance. The reading view must stay the established pale one, with no cabinet behind it. The existing appearance must remain available for comparison.
+
+Alternatives considered and choices:
+
+- **Approach timing.** (1) A uniform speed-up would also shorten the cover opening and reading approach. (2) Retiming only the camera would keep the drawer at V3's pace. The camera would then arrive early and wait, the entrance would not get shorter, and the follow camera would need its own clock. (3) Selected: one shared clock that runs faster from activation and eases back to V3's speed before the folder rotates. The approach takes 1.5 s instead of 2.0 s. The drawer opening also shortens, from 1.33 s to 0.97 s.
+- **Orbit.** Turning the camera in place would slide the cabinet off centre, so the camera turns about the point on the arrival axis nearest the cabinet's centre. The input filter is `pointerType === 'mouse'` rather than a hover media query, so hybrid devices orbit only with their mouse. Activation freezes the angle, and the approach releases it smoothly, so the entrance starts from the visitor's view.
+- **Stage.** A radially faded floor disc was considered. Fog matching the backdrop was selected, because both are applied in output colour space and meet without a seam. Blending the backdrop in linear light was tried first; it looked grey early, so the blend is in sRGB. Page chrome flips at the cross-fade's midpoint instead of blending its colour, because the buttons carry their own backgrounds and stay legible on either side.
+
+Consequences: each change has a study parameter restoring the previous behaviour (`?approach=1`, `?orbit=off`, `?look=pale`). With all three, current `main` is reproduced pixel for pixel. The settled reading view is identical in both appearances. A second shadow-casting light is added; each light skips shadow updates while unlit. The study parameters and the `/compare/` page ship in the build until a direction is chosen. Open questions and evidence: [entrance study record](reviews/entrance-study.md).
+
 ## Future entry format
 
 Record: decision, status, context, alternatives actually considered, reason, consequences, and evidence. Add dates when decisions are made. Avoid inventing retrospective experiments to justify a choice.
