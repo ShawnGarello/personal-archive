@@ -88,6 +88,20 @@ html[data-surface='scene']:is([data-phase='loading'], [data-phase='idle'], [data
 .entrance-read { background: oklch(0.99 0 0 / 0.85); color: oklch(0.25 0 0); }
 .entrance-open[aria-disabled='true'] { opacity: 0.55; cursor: progress; }
 
+/* Charcoal entrance study: light text and controls until the scene reports the
+   pale reading backdrop, which it does as the folder's cover opens. */
+html[data-look='charcoal'][data-surface='scene']:not([data-backdrop='pale']) body { background: #232427; }
+html[data-look='charcoal'][data-surface='scene']:not([data-backdrop='pale']) :is(.site-header, .experience-status) {
+  color: oklch(0.86 0 0);
+}
+html[data-look='charcoal'][data-surface='scene']:not([data-backdrop='pale']) .entrance-open {
+  background: oklch(0.95 0 0); color: oklch(0.2 0 0); border-color: oklch(0.95 0 0);
+}
+html[data-look='charcoal'][data-surface='scene']:not([data-backdrop='pale']) .entrance-read {
+  background: oklch(0.2 0 0 / 0.6); color: oklch(0.95 0 0); border-color: oklch(0.72 0 0);
+}
+html[data-look='charcoal'][data-surface='scene']:not([data-backdrop='pale']) :focus-visible { outline-color: oklch(0.95 0 0); }
+
 /* The HTML page tracks the 3D paper. Its background stays transparent so the
    rendered sheet is the paper; the text is the only readable copy. */
 html[data-surface='scene'] .paper {

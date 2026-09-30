@@ -1,10 +1,10 @@
 // Scene adapter: owns the renderer, the exported V3 clip, the turning sheet and
 // the camera. Reports page placement to the reading surface; never changes navigation.
 import {
-  AgXToneMapping, AnimationMixer, Box3, Color, DirectionalLight, LoopOnce, Matrix4, Mesh, Object3D,
-  PCFShadowMap, PerspectiveCamera, PlaneGeometry, PMREMGenerator, Quaternion, Raycaster,
-  Scene, ShadowMaterial, SRGBColorSpace, Vector2, Vector3, WebGLRenderer,
-  type AnimationAction, type BufferAttribute, type Material,
+  AgXToneMapping, AnimationMixer, Box3, CircleGeometry, Color, DirectionalLight, Fog, LoopOnce, Matrix4, Mesh,
+  MeshStandardMaterial, Object3D, PCFShadowMap, PerspectiveCamera, PlaneGeometry, PMREMGenerator, Quaternion,
+  Raycaster, Scene, ShadowMaterial, SpotLight, SRGBColorSpace, Vector2, Vector3, WebGLRenderer,
+  type AnimationAction, type BufferAttribute, type Material, type RGB,
 } from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
@@ -24,6 +24,22 @@ const TEXT_FADE = [frameTime(116), frameTime(130)] as const;
 /** V3's camera approaches the cabinet until frame 66, while the drawer opens (frames 18–50). */
 const CABINET_APPROACH_END = frameTime(66);
 const BACKGROUND = new Color('#f4f3ef');
+/** Reading setup (Wave 1B): key light, environment and shadow-only floor. */
+const KEY_INTENSITY = 1.6;
+const READING_ENVIRONMENT = 0.75;
+const FLOOR_SHADOW = 0.1;
+/**
+ * Charcoal entrance study: a spotlit cabinet on a charcoal stage whose floor
+ * fades into matching fog. The environment stays on, dimmed, so the cabinet's
+ * sides still read.
+ */
+const CHARCOAL = new Color('#232427');
+const STAGE_FLOOR = new Color('#3f3f43');
+const SPOT_INTENSITY = 360;
+const ENTRANCE_ENVIRONMENT = 0.3;
+const STAGE_FOG = [26, 60] as const;
+/** The stage changes to the reading setup as the folder becomes the page (cover opening). */
+const LIGHT_CHANGE = [frameTime(100), frameTime(124)] as const;
 /** Frames longer than this (under 10 fps) count as slow rendering. */
 const SLOW_FRAME = 0.1;
 /** This many consecutive slow frames settle the entrance or a turn; one hitch does not. */
@@ -65,6 +81,8 @@ export type PaperLayout =
   /** At rest; `sheet` is the document the sheets currently show. */
   | { readonly kind: 'settled'; readonly settled: Rect; readonly sheet: number };
 
+export type Look = 'charcoal' | 'pale';
+
 export interface SceneOptions extends SceneHooks {
   readonly canvas: HTMLCanvasElement;
   readonly url: string;
@@ -74,6 +92,10 @@ export interface SceneOptions extends SceneHooks {
   readonly approach: number;
   /** A mouse turns the idle arrival view about the cabinet (orbit study). */
   readonly orbit: boolean;
+  /** Entrance appearance: the charcoal stage (study) or Wave 1B's pale surround throughout. */
+  readonly look: Look;
+  /** Whether the backdrop behind the page chrome is pale, reported when it changes. */
+  readonly backdrop: (pale: boolean) => void;
   readonly reserve: (viewport: Viewport) => Reserve;
   readonly layout: (layout: PaperLayout) => void;
 }
@@ -126,17 +148,18 @@ async function build(renderer: WebGLRenderer, options: SceneOptions): Promise<Ar
   renderer.shadowMap.type = PCFShadowMap;
 
   const scene = new Scene();
-  scene.background = BACKGROUND;
+  const backdrop = BACKGROUND.clone();
+  scene.background = backdrop;
   const pmrem = new PMREMGenerator(renderer);
   const room = new RoomEnvironment();
   scene.environment = pmrem.fromScene(room, 0.04).texture;
-  scene.environmentIntensity = 0.75;
+  scene.environmentIntensity = READING_ENVIRONMENT;
   room.dispose();
   pmrem.dispose();
 
   // Key light comes from V2's "Large softbox" side, raised to shorten the hard
   // shadow; shadows fall behind the cabinet, away from the reading position.
-  const key = new DirectionalLight(0xffffff, 1.6);
+  const key = new DirectionalLight(0xffffff, KEY_INTENSITY);
   key.position.set(-2.5, 10, 1.5);
   key.target.position.set(0, 0, 3);
   key.castShadow = true;
@@ -147,14 +170,70 @@ async function build(renderer: WebGLRenderer, options: SceneOptions): Promise<Ar
   scene.add(key, key.target);
 
   // Shadow-only floor: the background colour is the floor everywhere else.
-  const floor = new Mesh(new PlaneGeometry(60, 60), new ShadowMaterial({ opacity: 0.1 }));
+  const floorShadow = new ShadowMaterial({ opacity: FLOOR_SHADOW });
+  const floor = new Mesh(new PlaneGeometry(60, 60), floorShadow);
   floor.rotation.x = -Math.PI / 2;
   floor.position.y = -0.01;
   floor.receiveShadow = true;
   scene.add(floor, root);
+
+  // Charcoal stage (study). A soft spotlight from above and in front leaves a
+  // pool of light around the cabinet and a blurred shadow behind it; the lit
+  // floor beneath the shadow-only one fades into fog of the backdrop colour.
+  const charcoal = options.look === 'charcoal';
+  const spot = new SpotLight(0xfff5ea, SPOT_INTENSITY, 0, degrees(22), 0.8, 2);
+  const stageMaterial = new MeshStandardMaterial({ color: STAGE_FLOOR, roughness: 0.95, transparent: true });
+  const stage = new Mesh(new CircleGeometry(90, 96), stageMaterial);
+  const fog = new Fog(CHARCOAL.clone(), STAGE_FOG[0], STAGE_FOG[1]);
+  if (charcoal) {
+    spot.position.set(-1.4, 12, 5.5);
+    spot.target.position.set(0, 1.2, 0.4);
+    spot.castShadow = true;
+    spot.shadow.mapSize.set(1024, 1024);
+    spot.shadow.bias = -0.0006;
+    spot.shadow.radius = 12;
+    Object.assign(spot.shadow.camera, { near: 4, far: 30 });
+    stage.rotation.x = -Math.PI / 2;
+    stage.position.y = -0.02;
+    stage.receiveShadow = true;
+    stage.renderOrder = -1; // Beneath the shadow-only floor as it fades in.
+    scene.fog = fog;
+    scene.add(spot, spot.target, stage);
+  }
   root.traverse((object) => {
     if ((object as Mesh).isMesh) (object as Mesh).castShadow = true;
   });
+
+  let lighting = -1;
+  let paleBackdrop: boolean | null = null;
+  // The backdrop blends in sRGB so that it brightens evenly to the eye.
+  const [dark, pale] = [CHARCOAL, BACKGROUND].map((color) => color.getRGB({ r: 0, g: 0, b: 0 }, SRGBColorSpace)) as [RGB, RGB];
+  /** 0 is the charcoal stage; 1 is exactly the reading setup. */
+  const light = (mix: number): void => {
+    if (mix === lighting) return;
+    lighting = mix;
+    const mixed = (from: number, to: number): number => from * (1 - mix) + to * mix;
+    if (mix >= 1) backdrop.copy(BACKGROUND);
+    else backdrop.setRGB(mixed(dark.r, pale.r), mixed(dark.g, pale.g), mixed(dark.b, pale.b), SRGBColorSpace);
+    fog.color.copy(backdrop);
+    key.intensity = mixed(0, KEY_INTENSITY);
+    key.shadow.autoUpdate = mix > 0;
+    spot.intensity = mixed(SPOT_INTENSITY, 0);
+    spot.shadow.autoUpdate = mix < 1;
+    scene.environmentIntensity = mixed(ENTRANCE_ENVIRONMENT, READING_ENVIRONMENT);
+    stageMaterial.opacity = 1 - mix;
+    stage.visible = mix < 1;
+    floorShadow.opacity = mixed(0, FLOOR_SHADOW);
+    floor.visible = mix > 0;
+    if (paleBackdrop !== mix >= 0.5) {
+      paleBackdrop = mix >= 0.5;
+      options.backdrop(paleBackdrop);
+    }
+  };
+  light(charcoal ? 0 : 1);
+  // An unlit light skips shadow updates, but its map must exist: WebGL rejects draws sampling a missing one.
+  key.shadow.needsUpdate = true;
+  spot.shadow.needsUpdate = true;
 
   const mixer = new AnimationMixer(root);
   const action: AnimationAction = mixer.clipAction(clip);
@@ -320,6 +399,7 @@ async function build(renderer: WebGLRenderer, options: SceneOptions): Promise<Ar
       camera.quaternion.slerp(reading.quaternion, weight);
     }
     camera.updateMatrixWorld(true);
+    if (charcoal) light(smoothstep(LIGHT_CHANGE[0], LIGHT_CHANGE[1], entranceTime));
     renderer.render(scene, camera);
     options.layout(layout());
   };
