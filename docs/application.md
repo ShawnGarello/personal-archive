@@ -52,13 +52,26 @@ The application root is `app/`. The config explicitly names the public and outpu
 | before script | The inline script sets `loading`/`scene`, or `reading`/`flat` for reduced motion or missing WebGL 2. Until the module runs, the inline script itself handles "Go straight to the document" and the skip link (showing `reading`/`flat` and focusing the document), because a module still downloading also delays `DOMContentLoaded`. The module adopts an existing `reading` state instead of starting a load. If the module has not run by `DOMContentLoaded` (for example, it failed), the page falls back to `reading`/`flat`. Without JavaScript nothing is hidden. |
 | `loading` | Status "Preparing the archive…"; Open is `aria-disabled`. "Go straight to the document" or the skip link leads to `reading`/`flat` and invalidates the load; a scene that finishes loading afterwards is disposed and the plain layout stays. Load failure leads to `reading`/`flat` with a status message; there is no automatic retry. Reduced motion switched on here also leads to `reading`/`flat`. |
 | `idle` | The Open button (pointer, Enter, or Space) or a click on the top drawer starts one entrance. Direct access settles the scene without motion. If reduced motion is now preferred, Open settles directly. |
-| `entering` | One 5.75-second timeline. Repeated Open, keyboard, or drawer input is ignored. "Skip the animation", the skip link, switching reduced motion on, or sustained slow rendering cancels the timeline, advances the ID, and settles `reading` on the scene surface. |
+| `entering` | One timeline: 5.24 seconds by default, 5.75 at V3 timing (see the entrance study below). Repeated Open, keyboard, or drawer input is ignored. "Skip the animation", the skip link, switching reduced motion on, or sustained slow rendering cancels the timeline, advances the ID, and settles `reading` on the scene surface. |
 | `reading` | Indefinite hold; the canvas re-renders only on resize. Previous/Next start a turn (see below). WebGL context loss disposes the scene and falls back to `flat` on the current document. |
 | `turning` | One 1.75-second turn (V3 frames 204–246). Previous/Next are `aria-disabled`; further requests are ignored, never queued. The skip link settles the turn and focuses the document. Switching reduced motion on, sustained slow rendering, context loss, or a viewport too small for the paper settles on the committed document. |
 
-Timeline time is real elapsed time while the document is visible. A hidden document pauses the timeline, and the gap is not counted when it becomes visible again. A single long foreground frame (an occluded window or a hitch) advances at most 0.25 s, so the motion resumes rather than jumping. Three consecutive frames longer than 100 ms (below 10 fps) mean rendering cannot keep up: the adapter reports this and the controller settles into reading, focusing the document as on completion. Resizing recomputes the field of view and reading pose; below a 1:1 aspect the vertical field of view widens so V3's centred action stays in frame.
+Timeline time is real elapsed time while the document is visible. An entrance clock (`entranceClock` in `geometry.ts`) maps it to V3 clip time; at V3 timing the two are equal. A hidden document pauses the timeline, and the gap is not counted when it becomes visible again. A single long foreground frame (an occluded window or a hitch) advances at most 0.25 s, so the motion resumes rather than jumping. Three consecutive frames longer than 100 ms (below 10 fps) mean rendering cannot keep up: the adapter reports this and the controller settles into reading, focusing the document as on completion. Resizing recomputes the field of view and reading pose; below a 1:1 aspect the vertical field of view widens so V3's centred action stays in frame.
 
 Focus: deliberate actions (entrance completion, direct access, skip) move focus to `main#reading`, which is also the paper's scroll container, so arrow keys, Page Down, and Space scroll it. Passive changes (load failure, reduced-motion change) move focus only when it was on an entrance control that has just disappeared. `main` is `inert` until `reading`, so the moving copy has no focus targets. The DOM contains exactly one document.
+
+### Entrance study: camera approach timing
+
+Study parameter `?approach=` (0.6–1, default 0.75; `1` is V3). V3's camera approaches the cabinet during clip frames 18–66 (2.0 s), while the drawer opens (frames 18–50). The approach takes this fraction of that time. The exported clip keeps one shared clock, so the follow camera stays on the folder. The clip runs faster from activation, then eases back to V3's speed along a smoothstep shortly after the approach. Everything from the folder's rotation (frame 83) plays at V3's pace, including the cover opening and reading approach. The clip speed changes gradually, so there is no hitch. It is never slower than V3.
+
+| `approach` | Entrance | Camera approach | Drawer opening | Lift (frames 50–70) | Rotation onwards |
+| --- | --- | --- | --- | --- | --- |
+| 1 (V3) | 5.75 s | 2.00 s | 1.33 s | 0.83 s | V3 |
+| 0.8 | 5.34 s | 1.60 s | 1.04 s | 0.72 s | V3 |
+| 0.75 (default) | 5.24 s | 1.50 s | 0.97 s | 0.69 s | V3 |
+| 0.7 | 5.14 s | 1.40 s | 0.90 s | 0.65 s | V3 |
+
+The drawer opening overlaps the approach, so it shortens slightly more than the approach does. This timing is a comparison for review, not an approved change to V3.
 
 ### Scene-to-HTML handoff
 

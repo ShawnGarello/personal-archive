@@ -116,7 +116,7 @@ test('skipping during the entrance settles reading and the old timeline never re
   const paper = page.locator('[data-paper]');
   const settled = await paper.getAttribute('style');
 
-  await page.clock.runFor(10_000); // Well past the original 5.75 s timeline.
+  await page.clock.runFor(10_000); // Well past the whole timeline (5.75 s at V3 timing).
   await expect(html).toHaveAttribute('data-phase', 'reading');
   expect(await paper.getAttribute('style')).toBe(settled);
   expect(await phaseLog(page)).toEqual(['loading', 'idle', 'entering', 'reading']);
@@ -232,7 +232,7 @@ test('sustained slow rendering settles into reading instead of stretching the en
   const transition = Number(await html.getAttribute('data-transition'));
 
   await page.getByRole('button', { name: 'Open the archive' }).click();
-  // Well inside the 5.75 s entrance (the old clamp took 15.6 s at 250 ms per frame).
+  // Well inside the entrance (5.24 s; the old clamp took 15.6 s at 250 ms per frame).
   await expect(html).toHaveAttribute('data-phase', 'reading', { timeout: 5_000 });
   await expect(html).toHaveAttribute('data-transition', String(transition + 2)); // open + settle
   await expect(page.locator('#reading')).toBeFocused();

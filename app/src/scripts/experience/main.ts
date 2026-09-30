@@ -35,6 +35,9 @@ const articles = Array.from(reading.querySelectorAll<HTMLElement>(':scope > [dat
 // Framing study (`?framing=0.86`); 0.78 is V3's rendered page height.
 const requested = Number(new URLSearchParams(location.search).get('framing'));
 const framing = requested >= 0.6 && requested <= 0.95 ? requested : 0.78;
+// Timing study (`?approach=1` is V3): the camera reaches the cabinet in this fraction of V3's time.
+const requestedApproach = Number(new URLSearchParams(location.search).get('approach'));
+const approach = requestedApproach >= 0.6 && requestedApproach <= 1 ? requestedApproach : 0.75;
 const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)');
 /**
  * Narrowest settled page, in rem, that still holds readable lines on the paper.
@@ -299,7 +302,7 @@ const controller = new ExperienceController({
     try {
       const { loadArchiveScene } = await import('./scene');
       const scene = await loadArchiveScene({
-        ...hooks, canvas, url: sceneUrl, framing, reserve,
+        ...hooks, canvas, url: sceneUrl, framing, approach, reserve,
         layout: (next) => { layout = next; applyPaper(); },
       });
       root.dataset.sceneLoad = 'loaded';

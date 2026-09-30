@@ -10,7 +10,7 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import type { ArchiveScene, SceneHooks } from './controller';
 import {
-  readingBox, smoothstep, turnPose, verticalFov, TURN_ANGLE,
+  entranceClock, readingBox, smoothstep, turnPose, verticalFov, TURN_ANGLE,
   type Quad, type Rect, type Reserve, type SheetPose, type Viewport,
 } from './geometry';
 
@@ -21,12 +21,14 @@ const frameTime = (frame: number): number => (frame - FIRST_FRAME) / FPS;
 const APPROACH = [frameTime(132), frameTime(156)] as const;
 /** The HTML text appears once the opening cover has swung clear of the page. */
 const TEXT_FADE = [frameTime(116), frameTime(130)] as const;
+/** V3's camera approaches the cabinet until frame 66, while the drawer opens (frames 18–50). */
+const CABINET_APPROACH_END = frameTime(66);
 const BACKGROUND = new Color('#f4f3ef');
 /** Frames longer than this (under 10 fps) count as slow rendering. */
 const SLOW_FRAME = 0.1;
 /** This many consecutive slow frames settle the entrance or a turn; one hitch does not. */
 const SLOW_FRAMES_TO_SETTLE = 3;
-/** Largest entrance timeline advance for a single frame, in seconds. */
+/** Largest entrance timeline advance for a single frame, in real seconds. */
 const MAX_STEP = 0.25;
 /** V3 page turn, frames 204–246. */
 const TURN_DURATION = 42 / FPS;
@@ -62,6 +64,8 @@ export interface SceneOptions extends SceneHooks {
   readonly url: string;
   /** Reading page height as a fraction of viewport height (framing study). */
   readonly framing: number;
+  /** Real duration of the camera's approach to the cabinet as a fraction of V3's (timing study). */
+  readonly approach: number;
   readonly reserve: (viewport: Viewport) => Reserve;
   readonly layout: (layout: PaperLayout) => void;
 }
@@ -149,6 +153,7 @@ async function build(renderer: WebGLRenderer, options: SceneOptions): Promise<Ar
   action.clampWhenFinished = true;
   action.play();
   const duration = clip.duration;
+  const clock = entranceClock(duration, CABINET_APPROACH_END, options.approach);
 
   // Sheet flex: V3's lattice moved the free edge along the sheet normal in
   // proportion to the squared distance from the attachment. The same profile
@@ -365,8 +370,8 @@ async function build(renderer: WebGLRenderer, options: SceneOptions): Promise<Ar
       if (motion || entranceTime > 0) return; // One entrance per scene; never restart.
       canvas.style.cursor = '';
       start({
-        time: 0, duration, maxStep: MAX_STEP,
-        advance: (time) => { entranceTime = time; },
+        time: 0, duration: clock.duration, maxStep: MAX_STEP,
+        advance: (time) => { entranceTime = clock.clipTime(time); },
         finish: () => { draw(); finished(); },
       }, 0);
     },
