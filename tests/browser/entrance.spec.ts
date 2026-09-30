@@ -2,6 +2,7 @@ import { expect, test, type Page } from '@playwright/test';
 
 // Observable state: <html data-phase data-surface data-transition data-scene-load>.
 const TITLE = 'Small tools for shared places';
+const SECOND_TITLE = 'A daylight notebook for small rooms';
 const PAGE_ASPECT = 1.48 / 2.1;
 // Real-time entrance: about 6 s with a GPU, over a minute with software WebGL.
 const ENTRANCE_TIMEOUT = 200_000;
@@ -23,7 +24,9 @@ async function readyWithPausedClock(page: Page): Promise<void> {
   await page.clock.install();
   await page.goto('/');
   await expect(page.locator('html')).toHaveAttribute('data-phase', 'idle', { timeout: 30_000 });
-  await page.clock.pauseAt(await page.evaluate(() => Date.now() + 100));
+  // Nothing is timed while idle, so pause well ahead: software WebGL can block
+  // the page for seconds (shader compilation) before the pause is applied.
+  await page.clock.pauseAt(await page.evaluate(() => Date.now() + 10_000));
 }
 
 async function expectSettledPage(page: Page): Promise<void> {
@@ -190,16 +193,24 @@ for (const control of ['button', 'skip link'] as const) {
     await expect(html).toHaveAttribute('data-phase', 'reading');
     await expect(html).toHaveAttribute('data-surface', 'flat');
     await expect(page.locator('#reading')).toBeFocused();
+    // Without working navigation every document stays readable, in order.
     await expect(page.getByRole('heading', { level: 1, name: TITLE })).toBeVisible();
+    await expect(page.getByRole('heading', { level: 1, name: SECOND_TITLE })).toBeVisible();
+    await expect(page.getByRole('navigation', { name: 'Documents' })).toBeHidden();
     expect(await html.getAttribute('data-booted')).toBeNull();
+    expect(await html.getAttribute('data-paged')).toBeNull();
 
-    // The late module must adopt the choice: no load, no layout change.
+    // The late module must adopt the choice: no load, and paging only arrives with working controls.
     release();
     await expect(html).toHaveAttribute('data-booted', 'true');
     await expect(html).toHaveAttribute('data-phase', 'reading');
     await expect(html).toHaveAttribute('data-surface', 'flat');
+    await expect(html).toHaveAttribute('data-document', 'fictional-field-notes');
     expect(await html.getAttribute('data-scene-load')).toBeNull();
     await expect(page.locator('#reading')).toBeFocused();
+    await expect(page.getByRole('heading', { level: 1, name: SECOND_TITLE })).toHaveCount(0);
+    await page.getByRole('button', { name: 'Next document' }).click();
+    await expect(page.getByRole('heading', { level: 1, name: SECOND_TITLE })).toBeVisible();
     expect(requests.filter((url) => url.endsWith('.glb'))).toEqual([]);
   });
 }

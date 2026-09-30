@@ -1,6 +1,6 @@
 ---
 import ReadingDocument from '../components/ReadingDocument.astro';
-import { fictionalDocument } from '../content/fictional-document';
+import { fictionalDocuments } from '../content/fictional-documents';
 import '../styles/global.css';
 ---
 
@@ -9,7 +9,7 @@ import '../styles/global.css';
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content="A fictional document for the Personal Archive reading study." />
+    <meta name="description" content="Fictional documents for the Personal Archive reading study." />
     <title>Fictional reading study · Personal Archive</title>
     <script is:inline>
       // Choose the entrance before first paint. Without JavaScript, or if the
@@ -33,6 +33,7 @@ import '../styles/global.css';
           readDirectly();
           document.getElementById('reading')?.focus();
         }, true);
+        // Every document stays visible in order until the module's navigation works.
         document.addEventListener('DOMContentLoaded', () => {
           if (!root.dataset.booted) readDirectly();
         });
@@ -57,10 +58,17 @@ import '../styles/global.css';
       </section>
     </div>
     <div class="paper" data-paper>
-      <main id="reading" tabindex="-1">
-        <ReadingDocument document={fictionalDocument} />
+      <main id="reading" class="reading-frame" tabindex="-1">
+        {fictionalDocuments.map((document, index) => <ReadingDocument document={document} active={index === 0} />)}
       </main>
     </div>
+    <nav class="document-nav" data-document-nav aria-label="Documents">
+      <button type="button" data-action="previous">Previous<span class="visually-hidden"> document</span></button>
+      <p class="document-position" data-document-position aria-live="polite" aria-atomic="true">
+        <span class="position-word">Document </span>1 of {fictionalDocuments.length}<span class="visually-hidden">: {fictionalDocuments[0].title}</span>
+      </p>
+      <button type="button" data-action="next">Next<span class="visually-hidden"> document</span></button>
+    </nav>
     <footer class="site-footer"><p>Fictional content. Provisional page layout.</p></footer>
   </body>
 </html>

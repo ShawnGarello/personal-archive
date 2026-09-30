@@ -1,6 +1,6 @@
 # Wave 1C: Reversible page turn and robust access
 
-Status: prepared for refinement after Wave 1B review; not assigned. Depends on the accepted browser entrance and readable handoff.
+Status: assigned 2026-09-28; implemented and locally verified on `implement/wave-1c`, awaiting audit. See the [Wave 1C record](../reviews/wave-1c.md). Depends on the accepted browser entrance and readable handoff.
 
 ## Outcome and scope
 

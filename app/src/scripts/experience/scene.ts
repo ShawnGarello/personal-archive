@@ -1,15 +1,18 @@
-// Scene adapter: owns the renderer, the exported V3 clip and the camera.
-// Reports page placement to the reading surface; never changes navigation.
+// Scene adapter: owns the renderer, the exported V3 clip, the turning sheet and
+// the camera. Reports page placement to the reading surface; never changes navigation.
 import {
   AgXToneMapping, AnimationMixer, Color, DirectionalLight, LoopOnce, Matrix4, Mesh, Object3D,
   PCFShadowMap, PerspectiveCamera, PlaneGeometry, PMREMGenerator, Quaternion, Raycaster,
   Scene, ShadowMaterial, SRGBColorSpace, Vector2, Vector3, WebGLRenderer,
-  type AnimationAction, type Material,
+  type AnimationAction, type BufferAttribute, type Material,
 } from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
-import type { EntranceScene, SceneHooks } from './controller';
-import { readingBox, smoothstep, verticalFov, type Quad, type Rect, type Reserve, type Viewport } from './geometry';
+import type { ArchiveScene, SceneHooks } from './controller';
+import {
+  readingBox, smoothstep, turnPose, verticalFov, TURN_ANGLE,
+  type Quad, type Rect, type Reserve, type SheetPose, type Viewport,
+} from './geometry';
 
 const FPS = 24;
 const FIRST_FRAME = 18; // V3 "ENTRANCE ACTIVATION"; clip time 0.
@@ -21,14 +24,38 @@ const TEXT_FADE = [frameTime(116), frameTime(130)] as const;
 const BACKGROUND = new Color('#f4f3ef');
 /** Frames longer than this (under 10 fps) count as slow rendering. */
 const SLOW_FRAME = 0.1;
-/** This many consecutive slow frames settle into reading; one hitch does not. */
+/** This many consecutive slow frames settle the entrance or a turn; one hitch does not. */
 const SLOW_FRAMES_TO_SETTLE = 3;
-/** Largest timeline advance for a single frame, in seconds. */
+/** Largest entrance timeline advance for a single frame, in seconds. */
 const MAX_STEP = 0.25;
+/** V3 page turn, frames 204–246. */
+const TURN_DURATION = 42 / FPS;
+/** Sheet length along its local z axis; the top attachment is z = 0. */
+const SHEET_LENGTH = 2.1;
+/** V3 "Free edge lag" displacement of the free edge at full weight, in sheet units. */
+const BEND_DEPTH = 0.18;
+const degrees = (value: number): number => (value * Math.PI) / 180;
+/**
+ * Text carried by a lifting sheet fades out between these angles, before the
+ * sheet is too foreshortened (and too curved) for a flat mapping; it fades back
+ * in over the same range as a returning sheet lands.
+ */
+const CARRIED_TEXT_FADE = [degrees(40), degrees(70)] as const;
+const X_AXIS = new Vector3(1, 0, 0);
 
 export type PaperLayout =
+  /** Entrance: the page follows the moving folder. */
   | { readonly kind: 'moving'; readonly quad: Quad | null; readonly settled: Rect; readonly opacity: number }
-  | { readonly kind: 'settled'; readonly settled: Rect };
+  /**
+   * Page turn: `upper` is the document printed on the turning sheet, carried by
+   * `quad` at `opacity`; the document beneath is uncovered below screen y `cover`.
+   */
+  | {
+    readonly kind: 'turning'; readonly settled: Rect; readonly upper: number;
+    readonly quad: Quad | null; readonly opacity: number; readonly cover: number;
+  }
+  /** At rest; `sheet` is the document the sheets currently show. */
+  | { readonly kind: 'settled'; readonly settled: Rect; readonly sheet: number };
 
 export interface SceneOptions extends SceneHooks {
   readonly canvas: HTMLCanvasElement;
@@ -39,9 +66,19 @@ export interface SceneOptions extends SceneHooks {
   readonly layout: (layout: PaperLayout) => void;
 }
 
+/** One real-time timeline: the entrance or a single turn. */
+interface Motion {
+  time: number;
+  readonly duration: number;
+  /** Cap on a single frame's advance, so one hitch resumes instead of jumping. */
+  readonly maxStep: number;
+  readonly advance: (time: number) => void;
+  readonly finish: () => void;
+}
+
 const name = (label: string): string => label.replace(/\s/g, '_').replace(/[[\]./:]/g, '');
 
-export async function loadArchiveScene(options: SceneOptions): Promise<EntranceScene> {
+export async function loadArchiveScene(options: SceneOptions): Promise<ArchiveScene> {
   const renderer = new WebGLRenderer({ canvas: options.canvas, antialias: true, powerPreference: 'high-performance' });
   try {
     return await build(renderer, options);
@@ -51,7 +88,7 @@ export async function loadArchiveScene(options: SceneOptions): Promise<EntranceS
   }
 }
 
-async function build(renderer: WebGLRenderer, options: SceneOptions): Promise<EntranceScene> {
+async function build(renderer: WebGLRenderer, options: SceneOptions): Promise<ArchiveScene> {
   const { canvas } = options;
   const gltf = await new GLTFLoader().loadAsync(options.url);
   const clip = gltf.animations[0];
@@ -62,9 +99,12 @@ async function build(renderer: WebGLRenderer, options: SceneOptions): Promise<En
     return found;
   };
   const exportedCamera = find('V3 | CAMERA | follow and settle');
-  const page = find('V3 | Page 01 paper');
+  // The first sheet is both the entrance's reading page and the sheet that turns.
+  const hinge = find('V3 | PAGE 01 | top attachment hinge');
+  const sheet = find('V3 | Page 01 paper');
   const drawer = find('V3 | DRAWER | slide Y');
   if (!clip) throw new Error('Scene export has no entrance clip');
+  if (!(sheet instanceof Mesh)) throw new Error('Scene export page is not a single mesh');
 
   renderer.outputColorSpace = SRGBColorSpace;
   renderer.toneMapping = AgXToneMapping;
@@ -110,15 +150,47 @@ async function build(renderer: WebGLRenderer, options: SceneOptions): Promise<En
   action.play();
   const duration = clip.duration;
 
+  // Sheet flex: V3's lattice moved the free edge along the sheet normal in
+  // proportion to the squared distance from the attachment. The same profile
+  // is applied to the sheet's vertices on the CPU (910 vertices).
+  const positions = sheet.geometry.getAttribute('position') as BufferAttribute;
+  const normals = sheet.geometry.getAttribute('normal') as BufferAttribute;
+  const flatY = Float32Array.from({ length: positions.count }, (_, i) => positions.getY(i));
+  const along = Float32Array.from({ length: positions.count }, (_, i) => (positions.getZ(i) / SHEET_LENGTH) ** 2);
+  const flatNormals = Float32Array.from(normals.array);
+  const restHinge = hinge.quaternion.clone();
+  const hingeTurn = new Quaternion();
+  sheet.frustumCulled = false; // Bending changes the bounds.
+  let bent = 0;
+
+  const poseSheet = ({ angle, bend }: SheetPose): void => {
+    // V3 rotates the attachment by −angle about local X, lifting the free edge towards the camera.
+    hinge.quaternion.copy(restHinge).multiply(hingeTurn.setFromAxisAngle(X_AXIS, -angle));
+    if (bend === bent) return;
+    bent = bend;
+    for (let i = 0; i < positions.count; i += 1) positions.setY(i, (flatY[i] ?? 0) + bend * BEND_DEPTH * (along[i] ?? 0));
+    positions.needsUpdate = true;
+    if (bend === 0) {
+      normals.copyArray(flatNormals);
+      normals.needsUpdate = true;
+    } else {
+      sheet.geometry.computeVertexNormals();
+    }
+  };
+  /** With two V3 sheets, the first document rests flat and the second shows once the sheet is turned over. */
+  const restPose = (index: number): SheetPose => ({ angle: index > 0 ? TURN_ANGLE : 0, bend: 0 });
+
   const camera = new PerspectiveCamera(30, 1, 0.05, 250);
   const reading = { position: new Vector3(), quaternion: new Quaternion(), rect: { x: 0, y: 0, width: 0, height: 0 } as Rect };
-  const corners = [new Vector3(-0.74, 0.0015, 0), new Vector3(0.74, 0.0015, 0), new Vector3(0.74, 0.0015, 2.1), new Vector3(-0.74, 0.0015, 2.1)];
   const viewport = { width: 1, height: 1 };
-  let elapsed = 0;
-  let running = false;
+  const scratch = new Vector3();
+  let motion: Motion | null = null;
+  let entranceTime = 0;
+  /** Document the sheets rest on when no turn is running. */
+  let shown = 0;
+  let turning: { readonly to: number; readonly forward: boolean; progress: number } | null = null;
   let frame = 0;
   let last = 0;
-  let done: (() => void) | null = null;
   let slowFrames = 0;
 
   const sample = (time: number): void => {
@@ -128,12 +200,36 @@ async function build(renderer: WebGLRenderer, options: SceneOptions): Promise<En
     root.updateMatrixWorld(true);
   };
 
-  const pageCorners = (): Vector3[] => corners.map((corner) => corner.clone().applyMatrix4(page.matrixWorld));
+  /** Sheet corners (top-left, top-right, bottom-right, bottom-left) in world space, following the flex. */
+  const sheetCorners = (bend = 0): Vector3[] => {
+    const y = 0.0015, drop = bend * BEND_DEPTH;
+    return [[-0.74, y, 0], [0.74, y, 0], [0.74, y + drop, SHEET_LENGTH], [-0.74, y + drop, SHEET_LENGTH]]
+      .map(([cx, cy, cz]) => new Vector3(cx, cy, cz).applyMatrix4(sheet.matrixWorld));
+  };
+
+  const project = (points: Vector3[]): Quad => {
+    const [a, b, c, d] = points.map((point) => {
+      const p = point.clone().project(camera);
+      return { x: ((p.x + 1) / 2) * viewport.width, y: ((1 - p.y) / 2) * viewport.height };
+    }) as [{ x: number; y: number }, { x: number; y: number }, { x: number; y: number }, { x: number; y: number }];
+    return [a, b, c, d];
+  };
+
+  /** Lowest screen y covered by the turning sheet; the document beneath is visible below it. */
+  const coverBottom = (): number => {
+    let lowest = -Infinity;
+    for (let i = 0; i < positions.count; i += 1) {
+      scratch.fromBufferAttribute(positions, i).applyMatrix4(sheet.matrixWorld).project(camera);
+      lowest = Math.max(lowest, ((1 - scratch.y) / 2) * viewport.height);
+    }
+    return lowest;
+  };
 
   /** Perpendicular camera above the settled page, sized to the framing study. */
   const computeReadingPose = (): void => {
+    poseSheet(restPose(0)); // The reading page is the first sheet at rest.
     sample(duration);
-    const [tl, tr, , bl] = pageCorners() as [Vector3, Vector3, Vector3, Vector3];
+    const [tl, tr, , bl] = sheetCorners() as [Vector3, Vector3, Vector3, Vector3];
     const across = tr.clone().sub(tl), down = bl.clone().sub(tl);
     const center = tl.clone().addScaledVector(across, 0.5).addScaledVector(down, 0.5);
     const xAxis = across.clone().normalize(), yAxis = down.clone().normalize().negate();
@@ -149,36 +245,44 @@ async function build(renderer: WebGLRenderer, options: SceneOptions): Promise<En
     camera.position.copy(reading.position);
     camera.quaternion.copy(reading.quaternion);
     camera.updateMatrixWorld(true);
-    const quad = project();
+    const quad = project(sheetCorners());
     const xs = quad.map((p) => p.x), ys = quad.map((p) => p.y);
     const x = Math.round(Math.min(...xs)), y = Math.round(Math.min(...ys));
     reading.rect = { x, y, width: Math.round(Math.max(...xs)) - x, height: Math.round(Math.max(...ys)) - y };
   };
 
-  const project = (): Quad => {
-    const [a, b, c, d] = pageCorners().map((corner) => {
-      const p = corner.project(camera);
-      return { x: ((p.x + 1) / 2) * viewport.width, y: ((1 - p.y) / 2) * viewport.height, z: p.z };
-    }) as [{ x: number; y: number; z: number }, { x: number; y: number; z: number }, { x: number; y: number; z: number }, { x: number; y: number; z: number }];
-    return [a, b, c, d];
+  const layout = (): PaperLayout => {
+    const settled = reading.rect;
+    if (entranceTime < duration) {
+      const opacity = smoothstep(TEXT_FADE[0], TEXT_FADE[1], entranceTime);
+      return { kind: 'moving', quad: opacity > 0 ? project(sheetCorners()) : null, settled, opacity };
+    }
+    if (turning) {
+      const pose = turnPose(turning.progress, turning.forward);
+      const opacity = 1 - smoothstep(CARRIED_TEXT_FADE[0], CARRIED_TEXT_FADE[1], pose.angle);
+      return {
+        kind: 'turning', settled, upper: Math.min(shown, turning.to),
+        quad: opacity > 0 ? project(sheetCorners(pose.bend)) : null, opacity, cover: coverBottom(),
+      };
+    }
+    return { kind: 'settled', settled, sheet: shown };
   };
 
-  const pose = (time: number): void => {
-    sample(time);
-    exportedCamera.matrixWorld.decompose(camera.position, camera.quaternion, new Vector3());
-    const weight = smoothstep(APPROACH[0], APPROACH[1], time);
+  /** Render the current entrance time and sheet pose, then report the page placement. */
+  const draw = (): void => {
+    poseSheet(turning ? turnPose(turning.progress, turning.forward) : restPose(shown));
+    sample(entranceTime);
+    exportedCamera.matrixWorld.decompose(camera.position, camera.quaternion, scratch);
+    // At the end of the entrance the weight is 1: the camera is exactly the
+    // reading pose and stays there. Turns never move it.
+    const weight = smoothstep(APPROACH[0], APPROACH[1], entranceTime);
     if (weight > 0) {
       camera.position.lerp(reading.position, weight);
       camera.quaternion.slerp(reading.quaternion, weight);
     }
     camera.updateMatrixWorld(true);
     renderer.render(scene, camera);
-    if (time >= duration) {
-      options.layout({ kind: 'settled', settled: reading.rect });
-      return;
-    }
-    const opacity = smoothstep(TEXT_FADE[0], TEXT_FADE[1], time);
-    options.layout({ kind: 'moving', quad: opacity > 0 ? project() : null, settled: reading.rect, opacity });
+    options.layout(layout());
   };
 
   const resize = (): void => {
@@ -190,44 +294,55 @@ async function build(renderer: WebGLRenderer, options: SceneOptions): Promise<En
     camera.fov = verticalFov(viewport) * 180 / Math.PI;
     camera.updateProjectionMatrix();
     computeReadingPose();
-    if (!running) pose(elapsed);
+    if (!motion) draw();
   };
 
   const tick = (now: number): void => {
-    if (!running) return;
+    const current = motion;
+    if (!current) return;
     if (document.visibilityState === 'hidden') {
       // Background tab: pause, and do not count the gap when visible again.
       last = 0;
       frame = requestAnimationFrame(tick);
       return;
     }
-    // Foreground time is real time. A single long gap (window occluded, a
-    // hitch) is capped so the motion resumes instead of jumping; sustained
-    // slow rendering hands over to reading instead of stretching the entrance.
-    const step = last ? (now - last) / 1000 : 0;
+    // Foreground time is real time. Sustained slow rendering hands over to
+    // reading instead of stretching the motion.
+    const step = last ? Math.max(0, now - last) / 1000 : 0;
     last = now;
     slowFrames = step > SLOW_FRAME ? slowFrames + 1 : 0;
     if (slowFrames >= SLOW_FRAMES_TO_SETTLE) {
       options.slow(); // The controller settles the scene and changes phase.
       return;
     }
-    elapsed += Math.min(step, MAX_STEP);
-    pose(elapsed);
-    if (elapsed >= duration) {
-      running = false;
-      const finished = done;
-      done = null;
-      finished?.();
+    current.time = Math.min(current.duration, current.time + Math.min(step, current.maxStep));
+    current.advance(current.time);
+    if (current.time >= current.duration) {
+      motion = null;
+      current.finish();
       return;
     }
+    draw();
     frame = requestAnimationFrame(tick);
+  };
+
+  const start = (next: Motion, from: number): void => {
+    motion = next;
+    last = from;
+    slowFrames = 0;
+    frame = requestAnimationFrame(tick);
+  };
+
+  const stop = (): void => {
+    motion = null;
+    cancelAnimationFrame(frame);
   };
 
   // Pointer activation: the active drawer (face, label or pull) is the handle.
   const raycaster = new Raycaster();
   const pointer = new Vector2();
   const overDrawer = (event: PointerEvent | MouseEvent): boolean => {
-    if (elapsed > 0 || running) return false;
+    if (entranceTime > 0 || motion) return false;
     pointer.set((event.clientX / viewport.width) * 2 - 1, -(event.clientY / viewport.height) * 2 + 1);
     raycaster.setFromCamera(pointer, camera);
     return raycaster.intersectObject(drawer, true).length > 0;
@@ -245,27 +360,47 @@ async function build(renderer: WebGLRenderer, options: SceneOptions): Promise<En
   resize();
   renderer.compile(scene, camera);
 
-  const stop = (): void => {
-    running = false;
-    done = null;
-    cancelAnimationFrame(frame);
-  };
-
   return {
     play(finished) {
-      if (running || elapsed > 0) return; // One entrance per scene; never restart.
-      running = true;
-      done = finished;
-      last = 0;
-      slowFrames = 0;
+      if (motion || entranceTime > 0) return; // One entrance per scene; never restart.
       canvas.style.cursor = '';
-      frame = requestAnimationFrame(tick);
+      start({
+        time: 0, duration, maxStep: MAX_STEP,
+        advance: (time) => { entranceTime = time; },
+        finish: () => { draw(); finished(); },
+      }, 0);
     },
-    settle() {
+    turn(target, finished) {
       stop();
-      elapsed = duration;
+      entranceTime = duration;
+      if (target === shown) {
+        draw();
+        finished();
+        return;
+      }
+      const state = { to: target, forward: target > shown, progress: 0 };
+      turning = state;
+      // A turn is short: real time with no per-frame cap, so a slow or
+      // hitching device finishes on schedule (or settles) instead of dragging.
+      start({
+        time: 0, duration: TURN_DURATION, maxStep: Infinity,
+        advance: (time) => { state.progress = time / TURN_DURATION; },
+        finish: () => {
+          turning = null;
+          shown = target;
+          draw();
+          finished();
+        },
+      }, performance.now());
+      draw(); // First frame now, so the reading surface never shows an unplaced page.
+    },
+    settle(target) {
+      stop();
+      entranceTime = duration;
+      turning = null;
+      shown = target;
       canvas.style.cursor = '';
-      pose(elapsed);
+      draw();
     },
     dispose() {
       stop();
