@@ -35,6 +35,7 @@ npm run test:browser
 - `app/src/content/fictional-documents.ts`: the documents in reading order, each with a stable ID, headings, paragraphs, project summary, and reference link; no scene imports or coordinates. Both are invented fixtures.
 - `app/src/components/ReadingDocument.astro`: renders one document into a semantic, selectable `article` at build time. Content is escaped by Astro, not injected as raw HTML.
 - `app/src/pages/index.astro`: one route, title, language, viewport, skip link, landmarks, entrance controls, status region, every document inside `main#reading`, the document navigation, and a small inline script that chooses the scene or plain layout before first paint.
+- `app/src/pages/compare.astro`: the entrance study comparison at `/compare/` (see below). It is a local review aid, not linked from the site; remove it before publication.
 - `app/src/scripts/experience/`: `controller.ts` (the single state authority), `main.ts` (DOM view, focus, and paper placement), `scene.ts` (three.js adapter, loaded on demand), `geometry.ts` (pure framing and projection math).
 - `app/src/assets/scene/archive-entrance-v3.glb` and `.json`: the exported scene and its provenance manifest. See the scene asset workflow below.
 - `app/src/styles/global.css`: provisional portrait composition with natural scrolling and phone reflow; scene-mode rules place the same document on the paper.
@@ -86,6 +87,10 @@ Study parameter `?look=pale` keeps the Wave 1B surround throughout. The inline s
 As the folder becomes the reading surface (clip frames 100–124, while the cover starts to open), everything cross-fades along a smoothstep to the reading setup: the backdrop colour (blended in sRGB, so it brightens evenly), fog colour, spotlight, key light, environment, and both floors. At the end of the cross-fade the reading setup is exactly Wave 1B's. The fog starts beyond anything the reading camera sees, so the settled reading view is pixel-identical to `?look=pale`, which a test checks. Skipping or settling lands directly on the reading setup. Each light skips shadow-map updates while unlit, but both maps are created on the first frame: WebGL rejects any draw that samples a missing map.
 
 The scene reports the backdrop at the cross-fade's midpoint, and the view mirrors it as `<html data-backdrop="dark|pale">`. While it is dark, the header and status use light text, Open becomes a light button, "Go straight to the document" a dark translucent one, and focus outlines turn light. Each button keeps its own background, so the switch is instant and both styles stay legible over any backdrop. The header has no background, so it is briefly low in contrast around the midpoint. Measured contrast on charcoal is at least 4.5:1 for text and 3:1 for the focus outline (tested). The plain layout, reduced motion, and failures are unaffected: the dark styles apply only on the scene surface.
+
+### Entrance study: comparison page
+
+With `npm run dev` (or a build and `npm run preview`), open `http://127.0.0.1:4321/compare/`. Two frames show the ordinary page with study parameters chosen from presets: the current appearance and V3 timing (`?look=pale&orbit=off&approach=1`), the full study (no parameters), the study with a 20% or 30% shorter approach, or each change on its own. Each page renders at a 1280 × 800 viewport and is scaled to fit its frame. A smaller viewport would read on the plain layout, the Wave 1C readable-size rule. "Open both" starts both entrances in the same task, so their timing can be compared. It works only when both archives are ready and closed; "Reload both" replays. "Open A alone" and "Open B alone" open a frame's page at full size. The orbit follows the pointer within each frame.
 
 ### Scene-to-HTML handoff
 
