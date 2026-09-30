@@ -51,7 +51,7 @@ The application root is `app/`. The config explicitly names the public and outpu
 | --- | --- |
 | before script | The inline script sets `loading`/`scene`, or `reading`/`flat` for reduced motion or missing WebGL 2. Until the module runs, the inline script itself handles "Go straight to the document" and the skip link (showing `reading`/`flat` and focusing the document), because a module still downloading also delays `DOMContentLoaded`. The module adopts an existing `reading` state instead of starting a load. If the module has not run by `DOMContentLoaded` (for example, it failed), the page falls back to `reading`/`flat`. Without JavaScript nothing is hidden. |
 | `loading` | Status "Preparing the archive…"; Open is `aria-disabled`. "Go straight to the document" or the skip link leads to `reading`/`flat` and invalidates the load; a scene that finishes loading afterwards is disposed and the plain layout stays. Load failure leads to `reading`/`flat` with a status message; there is no automatic retry. Reduced motion switched on here also leads to `reading`/`flat`. |
-| `idle` | The Open button (pointer, Enter, or Space) or a click on the top drawer starts one entrance. Direct access settles the scene without motion. If reduced motion is now preferred, Open settles directly. |
+| `idle` | The Open button (pointer, Enter, or Space) or a click on the top drawer starts one entrance. Direct access settles the scene without motion. If reduced motion is now preferred, Open settles directly. A mouse turns the view slightly (the orbit study below). |
 | `entering` | One timeline: 5.24 seconds by default, 5.75 at V3 timing (see the entrance study below). Repeated Open, keyboard, or drawer input is ignored. "Skip the animation", the skip link, switching reduced motion on, or sustained slow rendering cancels the timeline, advances the ID, and settles `reading` on the scene surface. |
 | `reading` | Indefinite hold; the canvas re-renders only on resize. Previous/Next start a turn (see below). WebGL context loss disposes the scene and falls back to `flat` on the current document. |
 | `turning` | One 1.75-second turn (V3 frames 204–246). Previous/Next are `aria-disabled`; further requests are ignored, never queued. The skip link settles the turn and focuses the document. Switching reduced motion on, sustained slow rendering, context loss, or a viewport too small for the paper settles on the committed document. |
@@ -72,6 +72,12 @@ Study parameter `?approach=` (0.6–1, default 0.75; `1` is V3). V3's camera app
 | 0.7 | 5.14 s | 1.40 s | 0.90 s | 0.65 s | V3 |
 
 The drawer opening overlaps the approach, so it shortens slightly more than the approach does. This timing is a comparison for review, not an approved change to V3.
+
+### Entrance study: idle pointer orbit
+
+Study parameter `?orbit=off` keeps the arrival view still, as in Wave 1B. While the cabinet is `idle`, the mouse position turns the camera about the cabinet. The pivot is the point on the arrival camera's axis nearest the cabinet's centre. A pointer at the right edge moves the camera 7° to the right, revealing the cabinet's right side; the top edge raises it 2.5°. The view eases towards the pointer at a frame-rate-independent rate (about 95% of the way in 0.75 s), and recentres when the pointer leaves the window. Rendering runs only while the view is still moving.
+
+Only `pointerType === 'mouse'` moves the view; touch and pen leave the cabinet still. When reduced motion is switched on, the controller tells the scene (`ArchiveScene.reduceMotion`), which returns to the arrival view at once and ignores the pointer. With reduced motion preferred at load the plain layout is used, as before. Activation freezes the angle; the approach to the cabinet then releases it along a smoothstep, from the angle the visitor left to V3's path by clip frame 66. The first entrance frame is therefore the last idle frame. The reading camera and page turns never use the orbit.
 
 ### Scene-to-HTML handoff
 

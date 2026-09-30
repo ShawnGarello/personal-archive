@@ -38,6 +38,9 @@ const framing = requested >= 0.6 && requested <= 0.95 ? requested : 0.78;
 // Timing study (`?approach=1` is V3): the camera reaches the cabinet in this fraction of V3's time.
 const requestedApproach = Number(new URLSearchParams(location.search).get('approach'));
 const approach = requestedApproach >= 0.6 && requestedApproach <= 1 ? requestedApproach : 0.75;
+
+// Orbit study (`?orbit=off` keeps the idle arrival view still, as in Wave 1B).
+const orbit = new URLSearchParams(location.search).get('orbit') !== 'off';
 const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)');
 /**
  * Narrowest settled page, in rem, that still holds readable lines on the paper.
@@ -302,7 +305,7 @@ const controller = new ExperienceController({
     try {
       const { loadArchiveScene } = await import('./scene');
       const scene = await loadArchiveScene({
-        ...hooks, canvas, url: sceneUrl, framing, approach, reserve,
+        ...hooks, canvas, url: sceneUrl, framing, approach, orbit, reserve,
         layout: (next) => { layout = next; applyPaper(); },
       });
       root.dataset.sceneLoad = 'loaded';

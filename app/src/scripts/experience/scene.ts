@@ -1,7 +1,7 @@
 // Scene adapter: owns the renderer, the exported V3 clip, the turning sheet and
 // the camera. Reports page placement to the reading surface; never changes navigation.
 import {
-  AgXToneMapping, AnimationMixer, Color, DirectionalLight, LoopOnce, Matrix4, Mesh, Object3D,
+  AgXToneMapping, AnimationMixer, Box3, Color, DirectionalLight, LoopOnce, Matrix4, Mesh, Object3D,
   PCFShadowMap, PerspectiveCamera, PlaneGeometry, PMREMGenerator, Quaternion, Raycaster,
   Scene, ShadowMaterial, SRGBColorSpace, Vector2, Vector3, WebGLRenderer,
   type AnimationAction, type BufferAttribute, type Material,
@@ -44,6 +44,12 @@ const degrees = (value: number): number => (value * Math.PI) / 180;
  */
 const CARRIED_TEXT_FADE = [degrees(40), degrees(70)] as const;
 const X_AXIS = new Vector3(1, 0, 0);
+const Y_AXIS = new Vector3(0, 1, 0);
+/** Idle pointer orbit (study): turn about the cabinet with the pointer at a viewport edge. */
+const ORBIT_YAW = degrees(7);
+const ORBIT_PITCH = degrees(2.5);
+/** Easing towards the pointer, per second: about 95% of the way in 0.75 s. */
+const ORBIT_RATE = 4;
 
 export type PaperLayout =
   /** Entrance: the page follows the moving folder. */
@@ -66,6 +72,8 @@ export interface SceneOptions extends SceneHooks {
   readonly framing: number;
   /** Real duration of the camera's approach to the cabinet as a fraction of V3's (timing study). */
   readonly approach: number;
+  /** A mouse turns the idle arrival view about the cabinet (orbit study). */
+  readonly orbit: boolean;
   readonly reserve: (viewport: Viewport) => Reserve;
   readonly layout: (layout: PaperLayout) => void;
 }
@@ -103,6 +111,7 @@ async function build(renderer: WebGLRenderer, options: SceneOptions): Promise<Ar
     return found;
   };
   const exportedCamera = find('V3 | CAMERA | follow and settle');
+  const cabinet = find('V3 | CABINET | fixed assembly');
   // The first sheet is both the entrance's reading page and the sheet that turns.
   const hinge = find('V3 | PAGE 01 | top attachment hinge');
   const sheet = find('V3 | Page 01 paper');
@@ -197,12 +206,34 @@ async function build(renderer: WebGLRenderer, options: SceneOptions): Promise<Ar
   let frame = 0;
   let last = 0;
   let slowFrames = 0;
+  /** Orbit angles in radians: `aim` follows the mouse while idle; `view` eases towards it and is frozen by the entrance. */
+  const aim = { yaw: 0, pitch: 0 };
+  const view = { yaw: 0, pitch: 0 };
+  const orbitTurn = new Quaternion();
+  const pitchTurn = new Quaternion();
+  let orbitAllowed = options.orbit;
+  let orbitFrame = 0;
+  let orbitLast = 0;
 
   const sample = (time: number): void => {
     action.paused = false;
     action.time = Math.min(time, duration);
     mixer.update(0);
     root.updateMatrixWorld(true);
+  };
+
+  // The orbit pivot: the point on the arrival camera's axis nearest the cabinet's centre.
+  sample(0);
+  const arrivalPosition = new Vector3().setFromMatrixPosition(exportedCamera.matrixWorld);
+  const arrivalAxis = new Vector3(0, 0, -1).transformDirection(exportedCamera.matrixWorld);
+  const cabinetCentre = new Box3().setFromObject(cabinet).getCenter(new Vector3());
+  const pivot = arrivalPosition.clone().addScaledVector(arrivalAxis, cabinetCentre.sub(arrivalPosition).dot(arrivalAxis));
+
+  /** Turn the camera about the pivot: pitch raises it (looking further down), then yaw moves it right. */
+  const orbitCamera = (yaw: number, pitch: number): void => {
+    orbitTurn.setFromAxisAngle(Y_AXIS, yaw).multiply(pitchTurn.setFromAxisAngle(X_AXIS, -pitch));
+    camera.position.sub(pivot).applyQuaternion(orbitTurn).add(pivot);
+    camera.quaternion.premultiply(orbitTurn);
   };
 
   /** Sheet corners (top-left, top-right, bottom-right, bottom-left) in world space, following the flex. */
@@ -278,6 +309,9 @@ async function build(renderer: WebGLRenderer, options: SceneOptions): Promise<Ar
     poseSheet(turning ? turnPose(turning.progress, turning.forward) : restPose(shown));
     sample(entranceTime);
     exportedCamera.matrixWorld.decompose(camera.position, camera.quaternion, scratch);
+    // The approach to the cabinet releases the idle orbit, continuing from the angle the visitor left.
+    const orbitWeight = 1 - smoothstep(0, CABINET_APPROACH_END, entranceTime);
+    if (orbitWeight > 0 && (view.yaw !== 0 || view.pitch !== 0)) orbitCamera(view.yaw * orbitWeight, view.pitch * orbitWeight);
     // At the end of the entrance the weight is 1: the camera is exactly the
     // reading pose and stays there. Turns never move it.
     const weight = smoothstep(APPROACH[0], APPROACH[1], entranceTime);
@@ -343,6 +377,45 @@ async function build(renderer: WebGLRenderer, options: SceneOptions): Promise<Ar
     cancelAnimationFrame(frame);
   };
 
+  const idle = (): boolean => entranceTime === 0 && !motion;
+  const stopOrbit = (): void => {
+    cancelAnimationFrame(orbitFrame);
+    orbitFrame = 0;
+  };
+  const orbitTick = (now: number): void => {
+    orbitFrame = 0;
+    if (!orbitAllowed || !idle()) return;
+    // Frame-rate independent easing; after a long frame the view simply arrives sooner.
+    const step = orbitLast ? Math.max(0, now - orbitLast) / 1000 : 1 / 60;
+    orbitLast = now;
+    const ease = 1 - Math.exp(-ORBIT_RATE * step);
+    view.yaw += (aim.yaw - view.yaw) * ease;
+    view.pitch += (aim.pitch - view.pitch) * ease;
+    const settled = Math.abs(aim.yaw - view.yaw) < 1e-4 && Math.abs(aim.pitch - view.pitch) < 1e-4;
+    if (settled) Object.assign(view, aim);
+    draw();
+    if (!settled) orbitFrame = requestAnimationFrame(orbitTick);
+  };
+  const wakeOrbit = (): void => {
+    if (!orbitAllowed || !idle() || orbitFrame) return;
+    orbitLast = 0;
+    orbitFrame = requestAnimationFrame(orbitTick);
+  };
+  // Only a mouse moves the view; touch and pen leave the cabinet still.
+  const clamp = (value: number): number => Math.min(1, Math.max(-1, value));
+  const onOrbitPointer = (event: PointerEvent): void => {
+    if (event.pointerType !== 'mouse') return;
+    aim.yaw = ORBIT_YAW * clamp((event.clientX / viewport.width) * 2 - 1);
+    aim.pitch = ORBIT_PITCH * clamp(1 - (event.clientY / viewport.height) * 2);
+    wakeOrbit();
+  };
+  const onOrbitLeave = (event: PointerEvent): void => {
+    if (event.pointerType !== 'mouse') return;
+    aim.yaw = 0;
+    aim.pitch = 0;
+    wakeOrbit();
+  };
+
   // Pointer activation: the active drawer (face, label or pull) is the handle.
   const raycaster = new Raycaster();
   const pointer = new Vector2();
@@ -355,13 +428,15 @@ async function build(renderer: WebGLRenderer, options: SceneOptions): Promise<Ar
   const onMove = (event: PointerEvent): void => { canvas.style.cursor = overDrawer(event) ? 'pointer' : ''; };
   const onClick = (event: MouseEvent): void => { if (overDrawer(event)) options.activate(); };
   const onContextLost = (event: Event): void => { event.preventDefault(); options.fail(new Error('WebGL context lost')); };
-  const onVisibility = (): void => { last = 0; };
+  const onVisibility = (): void => { last = 0; orbitLast = 0; };
 
   window.addEventListener('resize', resize);
   canvas.addEventListener('pointermove', onMove);
   canvas.addEventListener('click', onClick);
   canvas.addEventListener('webglcontextlost', onContextLost);
   document.addEventListener('visibilitychange', onVisibility);
+  window.addEventListener('pointermove', onOrbitPointer);
+  document.documentElement.addEventListener('pointerleave', onOrbitLeave);
   resize();
   renderer.compile(scene, camera);
 
@@ -369,6 +444,7 @@ async function build(renderer: WebGLRenderer, options: SceneOptions): Promise<Ar
     play(finished) {
       if (motion || entranceTime > 0) return; // One entrance per scene; never restart.
       canvas.style.cursor = '';
+      stopOrbit(); // `view` stays where the visitor left it; the approach releases it.
       start({
         time: 0, duration: clock.duration, maxStep: MAX_STEP,
         advance: (time) => { entranceTime = clock.clipTime(time); },
@@ -399,6 +475,16 @@ async function build(renderer: WebGLRenderer, options: SceneOptions): Promise<Ar
       }, performance.now());
       draw(); // First frame now, so the reading surface never shows an unplaced page.
     },
+    reduceMotion(reduce) {
+      orbitAllowed = options.orbit && !reduce;
+      if (orbitAllowed) return;
+      // Still at once: the idle cabinet returns to the arrival view without easing.
+      stopOrbit();
+      const moved = view.yaw !== 0 || view.pitch !== 0;
+      Object.assign(aim, { yaw: 0, pitch: 0 });
+      Object.assign(view, { yaw: 0, pitch: 0 });
+      if (moved && idle()) draw();
+    },
     settle(target) {
       stop();
       entranceTime = duration;
@@ -409,6 +495,9 @@ async function build(renderer: WebGLRenderer, options: SceneOptions): Promise<Ar
     },
     dispose() {
       stop();
+      stopOrbit();
+      window.removeEventListener('pointermove', onOrbitPointer);
+      document.documentElement.removeEventListener('pointerleave', onOrbitLeave);
       window.removeEventListener('resize', resize);
       canvas.removeEventListener('pointermove', onMove);
       canvas.removeEventListener('click', onClick);

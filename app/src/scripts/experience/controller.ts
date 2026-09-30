@@ -31,6 +31,8 @@ export interface ArchiveScene {
   turn(document: number, done: () => void): void;
   /** Stop any timeline and show the reading pose with the sheets resting on `document`. */
   settle(document: number): void;
+  /** Reduced motion keeps the idle cabinet still: no pointer orbit. */
+  reduceMotion(reduce: boolean): void;
   dispose(): void;
 }
 
@@ -186,6 +188,7 @@ export class ExperienceController {
 
   reducedMotionChanged(reduce: boolean): void {
     this.#reducedMotion = reduce;
+    this.#scene?.reduceMotion(reduce);
     // An idle cabinet stays available; Open then settles without motion.
     const { phase } = this.#state;
     if (reduce && (phase === 'loading' || phase === 'entering' || phase === 'turning')) this.readNow('reduced-motion');
