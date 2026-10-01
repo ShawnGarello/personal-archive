@@ -94,8 +94,6 @@ export interface SceneOptions extends SceneHooks {
   readonly orbit: boolean;
   /** Entrance appearance: the charcoal stage (study) or Wave 1B's pale surround throughout. */
   readonly look: Look;
-  /** Whether the backdrop behind the page chrome is pale, reported when it changes. */
-  readonly backdrop: (pale: boolean) => void;
   readonly reserve: (viewport: Viewport) => Reserve;
   readonly layout: (layout: PaperLayout) => void;
 }
@@ -205,7 +203,6 @@ async function build(renderer: WebGLRenderer, options: SceneOptions): Promise<Ar
   });
 
   let lighting = -1;
-  let paleBackdrop: boolean | null = null;
   // The backdrop blends in sRGB so that it brightens evenly to the eye.
   const [dark, pale] = [CHARCOAL, BACKGROUND].map((color) => color.getRGB({ r: 0, g: 0, b: 0 }, SRGBColorSpace)) as [RGB, RGB];
   /** 0 is the charcoal stage; 1 is exactly the reading setup. */
@@ -225,10 +222,6 @@ async function build(renderer: WebGLRenderer, options: SceneOptions): Promise<Ar
     stage.visible = mix < 1;
     floorShadow.opacity = mixed(0, FLOOR_SHADOW);
     floor.visible = mix > 0;
-    if (paleBackdrop !== mix >= 0.5) {
-      paleBackdrop = mix >= 0.5;
-      options.backdrop(paleBackdrop);
-    }
   };
   light(charcoal ? 0 : 1);
   // An unlit light skips shadow updates, but its map must exist: WebGL rejects draws sampling a missing one.

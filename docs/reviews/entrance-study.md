@@ -49,11 +49,13 @@ npx playwright test -c artifacts/entrance-study/playwright.swiftshader.config.ts
 | Type check / lint | 0 errors, 0 warnings, 0 hints / pass with zero warnings |
 | Build | Pass; the existing warning that the lazy three.js chunk exceeds 500 kB. The build now also emits `compare/index.html`. |
 | Browser tests before changes | 31 passed (1.9 min, GPU) |
-| Browser tests, hardware GPU (ANGLE/D3D11) | 44 passed (1.3 min): the 31 existing and 13 new |
-| Browser tests, software WebGL (SwiftShader) | 44 passed (6.8 min) |
+| Browser tests, hardware GPU (ANGLE/D3D11) | 46 passed (1.6 min): the 31 existing and 15 new |
+| Browser tests, software WebGL (SwiftShader) | 46 passed (10.3 min; 6.8 min before the two cross-fade tests, which render about 45 frames each) |
 | Remote GitHub CI | **Not run**: the branch is unpushed |
 
 New tests: `entrance-timing.spec.ts` checks the pure clock without a page (identity at 1; arrival, continuity, never slower than V3, and V3 pace from the rotation onwards at 0.7, 0.75, and 0.8). `entrance-orbit.spec.ts` and `entrance-look.spec.ts` compare rendered frames and measured colours. Each new behaviour test was checked against a deliberate regression, and each regression made it fail: no touch filter on the orbit, no reset on reduced motion, snapping to centre on activation, removing the light chrome styles, and stopping the cross-fade at 99%. Two probes led to fixes in the tests themselves. The touch test first passed with the filters removed, because Chromium sends only one touch `pointermove` before `pointercancel` and `pointerleave`. The test now checks the frame while the finger is down, and the leave handler also ignores touch. The reading-view comparison first used a mean over the screen, which diluted small lighting changes, so it now counts pixels that differ.
+
+The two cross-fade tests (desktop 1024 × 640 and phone 390 × 844) were added after review. They step the paused clock in 96 ms frames, below the 100 ms slow-rendering threshold, and sample every frame from 0.3 s before the fade to 0.3 s after it. On each frame they measure the status and skip-control text against the rendered pixels behind it, and the focus ring against the backdrop beside it. They also check that the header is hidden and that the samples run from charcoal to pale. Against the previous chrome they fail because the header is visible. With that check removed, the previous chrome's phone status measured 4.0:1 before the fade and 2.35:1 at its midpoint, and its header 2.32:1. They also fail with the status pill removed (4.31:1 mid-fade) or with a single-tone light focus ring (2.25:1).
 
 ## Evidence
 
@@ -68,8 +70,9 @@ Local and ignored under `artifacts/entrance-study/`. The scripts are there too (
 | Equivalence with current `main` | Pixel comparison | `baseline/`, `results.md` |
 | Desktop and phone, study and current | Playback, frame timing | `motion/*.webm`, `motion/*.json` |
 | Comparison page | Screenshots | `compare/` |
+| Entrance chrome through the cross-fade, after the review fix | Deterministic frames; per-frame contrast | `fix/desktop-sheet.png`, `fix/phone-sheet.png`, `fade-contrast-fixed.txt` |
 
-**Equivalence.** Current `main` was built from `git archive origin/main` in a scratch directory. It was compared with this branch at `?look=pale&orbit=off&approach=1` at idle and at 0.5, 1.5, 2.5, 3.5, 4.5, 5.2, and 5.75 s. No pixel differed at any moment. The settled reading view of the full study is also identical to `main`'s (6.0 s; no differing pixel).
+**Equivalence.** Current `main` was built from `git archive origin/main` in a scratch directory. It was compared with this branch at `?look=pale&orbit=off&approach=1` at idle and at 0.5, 1.5, 2.5, 3.5, 4.5, 5.2, and 5.75 s. No pixel differed at any moment. The settled reading view of the full study is also identical to `main`'s (6.0 s; no differing pixel). Captures are reproducible only up to a one-frame (16 ms) phase offset between runs. Repeating the same capture on one build differed by 3–8% of pixels in one run and not at all in another. A run-to-run offset can produce false differences but not false matches. After the contrast fix, the pale-look frames again matched the earlier captures exactly.
 
 **Timing and frame rate** (real time, GPU, from Open to `reading`):
 
@@ -89,15 +92,16 @@ The recordings were made for owner review. I judged motion from the deterministi
 - **Stage defect found and fixed.** The first version rendered only the charcoal backdrop, with no cabinet. Skipping the unlit key light's shadow update left its shadow map uncreated, and WebGL rejects every draw that samples a missing map. Both maps are now created on the first frame.
 - **Backdrop blend.** Blending the backdrop in linear light jumped to mid-grey early (`look/v2` vs `look/v3`), so it now blends in sRGB. A lighter stage floor read as grey rather than charcoal around the pool, so it was darkened and the spotlight raised. The shadow was crisp, so the penumbra was widened and the shadow blurred.
 - **Comparison frames.** At about 775 × 485, both pages correctly used the plain reading layout, the Wave 1C readable-size rule. The frames therefore render at 1280 × 800 and are scaled down.
+- **Contrast through the cross-fade (found in review).** The first version switched the chrome's colours at the cross-fade's midpoint, while the backdrop faded continuously, and the tests only checked the two ends. Mid-fade, light text sat on mid-grey; on phones the header also crossed the lit cabinet. The review measured about 3.1:1 for the header and 3.4:1 for the status in a phone frame at 3.4 s. The fix stops relying on the backdrop: the header is hidden during the entrance, and the status and skip control carry their own dark surfaces. Focus rings are two-tone, and the scene's backdrop report (`data-backdrop`) was removed.
 
 ## For owner review
 
 1. **Approach length.** 25% shorter feels quicker, but the drawer opening also shortens by 27% (1.33 → 0.97 s) because it overlaps the approach. Compare 20% (drawer 1.04 s) and 30% (0.90 s) on the comparison page.
 2. **Orbit strength.** 7° sideways and 2.5° vertically is restrained by design. The view recentres when the pointer leaves the window. Keyboard, touch, and pen visitors see the still arrival view.
 3. **Stage.** Charcoal `#232427`, a slightly warm spotlight, pool size, and shadow softness are first choices, not final lighting. The cross-fade (clip frames 100–124, about 2.9–3.9 s) passes through mid-grey while the cover opens.
-4. **Chrome during the cross-fade.** The header has no background, so near the cross-fade's midpoint its contrast falls to about 2.2:1 for a few hundred milliseconds (estimated from the blended colours). On phones the fixed header also overlaps the cabinet during the follow shot, a known Wave 1B issue, now as light text on the light cabinet around 3.2 s. A backdrop behind the header, or hiding it during the entrance, would resolve both.
+4. **Chrome during the entrance.** Resolved after review: the header is hidden from Open until reading, and the status and controls keep at least 10:1 contrast throughout the fade (above). Whether the header should reappear sooner, or the pill and button styles should change, is a visual choice. `?look=pale` deliberately keeps `main`'s behaviour, including the header crossing the cabinet on phones (a known Wave 1B issue).
 5. **Study aids in the build.** `/compare/` and the study parameters ship in the static build, like `?framing`. Remove them before publication, or when a direction is chosen.
-6. **Reverting one change.** Reverting all four study commits, newest first, is clean and restores `main`'s tree exactly. The comparison page reverts cleanly on its own. The three earlier commits share wiring lines (the scene options, their call in `main.ts`, and adjacent documentation sections). Reverting one of them alone leaves 1–5 small conflict hunks to resolve by hand. Each change can also be switched off with its parameter, and changing a default is a one-line edit.
+6. **Reverting one change.** Reverting all the study commits, newest first, is clean and restores `main`'s tree exactly (checked again after the contrast fix). The comparison page and the contrast fix each revert cleanly on their own. The three earlier commits share wiring lines (the scene options, their call in `main.ts`, and adjacent documentation sections). Reverting one of them alone leaves 1–5 small conflict hunks to resolve by hand. Each change can also be switched off with its parameter, and changing a default is a one-line edit.
 
 ## Limits
 

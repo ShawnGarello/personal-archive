@@ -78,6 +78,10 @@ Created `experiment/cabinet-entrance` in an isolated worktree from merged main (
 
 Browser review found a stage that rendered nothing but its backdrop: an unlit light's shadow map had never been created, and WebGL rejects draws that sample it. It also found a backdrop blend that turned grey too early, and comparison frames too small for the paper reading surface. All three are fixed. Mutation probes showed two new tests too weak (touch input, reading equivalence); both were tightened. Current main is reproduced pixel for pixel with the study switched off, and 44 browser tests pass with a GPU and with software WebGL. See the [entrance study record](reviews/entrance-study.md). The next step is owner review of the comparison; the branch is unpushed for audit.
 
+## Entrance study contrast fix - 2026-09-30
+
+Review found that the entrance text lost contrast during the backdrop cross-fade. The chrome switched colours at a single midpoint while the backdrop faded continuously. On phones the header also crossed the lit cabinet, and the tests checked only the two ends of the fade. Entrance text no longer depends on the backdrop. The header is hidden during the entrance, and the status and skip control carry their own dark surfaces. Focus rings are two-tone. New desktop and phone tests measure every frame of the fade. They fail against the previous chrome, which measured as low as 2.3:1, and pass with the fix (at least 10.2:1 for text). The pale comparison look is unchanged.
+
 ## Format for future milestones
 
 - Objective: what we wanted to learn or deliver.

@@ -310,7 +310,6 @@ const controller = new ExperienceController({
       const scene = await loadArchiveScene({
         ...hooks, canvas, url: sceneUrl, framing, approach, orbit, look, reserve,
         layout: (next) => { layout = next; applyPaper(); },
-        backdrop: (pale) => { root.dataset.backdrop = pale ? 'pale' : 'dark'; },
       });
       root.dataset.sceneLoad = 'loaded';
       return scene;
