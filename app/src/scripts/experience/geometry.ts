@@ -66,6 +66,36 @@ export function smoothstep(edge0: number, edge1: number, value: number): number 
   return t * t * (3 - 2 * t);
 }
 
+export interface EntranceClock {
+  /** Real duration of the entrance, in seconds. */
+  readonly duration: number;
+  /** Clip time reached `elapsed` real seconds after activation. */
+  clipTime(elapsed: number): number;
+}
+
+/**
+ * Entrance timing study. V3's camera approaches the cabinet until `approachEnd`
+ * (clip seconds); `approach` scales the real time that approach takes (1 is
+ * V3). The whole clip shares one clock so the follow camera stays on the
+ * folder: it runs faster from activation, then eases back to V3's speed
+ * (a smoothstep) just after the approach, so later motion keeps V3's pace.
+ */
+export function entranceClock(clipDuration: number, approachEnd: number, approach: number): EntranceClock {
+  const arrival = approach * approachEnd;
+  const ease = [arrival * (2 / 3), arrival * (7 / 6)] as const;
+  // Clip time gained per unit of extra speed by real time t: the integral of 1 − smoothstep.
+  const gain = (t: number): number => {
+    const u = Math.min(1, Math.max(0, (t - ease[0]) / (ease[1] - ease[0])));
+    return Math.min(t, ease[0]) + (ease[1] - ease[0]) * (u - u ** 3 + u ** 4 / 2);
+  };
+  const extra = arrival > 0 ? (approachEnd - arrival) / gain(arrival) : 0;
+  const duration = clipDuration - extra * gain(Infinity);
+  return {
+    duration,
+    clipTime: (elapsed) => (elapsed >= duration ? clipDuration : Math.max(0, elapsed + extra * gain(elapsed))),
+  };
+}
+
 /** V3 turns the first sheet 178° about its top attachment (frames 204–246). */
 export const TURN_ANGLE = (178 * Math.PI) / 180;
 /** V3 "Free edge lag" shape-key keys over the forward turn: [progress, weight]. */

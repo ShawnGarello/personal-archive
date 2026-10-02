@@ -1,0 +1,131 @@
+---
+// Entrance study comparison for local owner review. Each frame is the ordinary
+// page with study parameters; both are same-origin, so one control can start
+// both entrances together.
+const base = import.meta.env.BASE_URL;
+const presets = [
+  { query: '?look=pale&orbit=off&approach=1', label: 'Current: pale, still, V3 timing' },
+  { query: '', label: 'Study: charcoal, orbit, 25% shorter approach' },
+  { query: '?approach=0.8', label: 'Study with a 20% shorter approach' },
+  { query: '?approach=0.7', label: 'Study with a 30% shorter approach' },
+  { query: '?look=pale&orbit=off', label: 'Only the shorter approach' },
+  { query: '?look=pale&approach=1', label: 'Only the orbit' },
+  { query: '?orbit=off&approach=1', label: 'Only the charcoal stage' },
+];
+const panes = [
+  { id: 'a', preset: 0 },
+  { id: 'b', preset: 1 },
+];
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>Entrance comparison · Personal Archive study</title>
+  </head>
+  <body>
+    <header>
+      <h1>Entrance comparison</h1>
+      <p>
+        Local study aid with fictional content. Each frame is the ordinary page at a 1280 × 800 viewport, scaled to fit.
+        Point at a frame to see its orbit; open both to compare timing. Open a frame alone to see it at full size.
+      </p>
+      <div class="controls">
+        <button type="button" data-open-both>Open both</button>
+        <button type="button" data-reload-both>Reload both</button>
+        <p class="message" role="status" data-message></p>
+      </div>
+    </header>
+    <main>
+      {panes.map(({ id, preset }) => (
+        <section class="pane" data-pane>
+          <div class="pane-bar">
+            <label for={`preset-${id}`}>Frame {id.toUpperCase()}</label>
+            <select id={`preset-${id}`} data-preset>
+              {presets.map((option, index) => <option value={option.query} selected={index === preset}>{option.label}</option>)}
+            </select>
+            <a data-link href={`${base}${presets[preset]?.query ?? ''}`}>Open {id.toUpperCase()} alone</a>
+            <span class="phase" data-phase-label></span>
+          </div>
+          <div class="frame">
+            <iframe title={`Archive entrance, frame ${id.toUpperCase()}`} src={`${base}${presets[preset]?.query ?? ''}`} data-frame></iframe>
+          </div>
+        </section>
+      ))}
+    </main>
+    <script>
+      const base = import.meta.env.BASE_URL;
+      const panes = [...document.querySelectorAll<HTMLElement>('[data-pane]')].map((pane) => ({
+        select: pane.querySelector<HTMLSelectElement>('[data-preset]'),
+        frame: pane.querySelector<HTMLIFrameElement>('[data-frame]'),
+        link: pane.querySelector<HTMLAnchorElement>('[data-link]'),
+        phase: pane.querySelector<HTMLElement>('[data-phase-label]'),
+      }));
+      const message = document.querySelector<HTMLElement>('[data-message]');
+      // Each page sees a laptop viewport, so the reading page fits on the paper (a small
+      // frame would switch to the plain layout); the frame is scaled to fit.
+      const VIEWPORT_WIDTH = 1280;
+      const fit = new ResizeObserver((entries) => {
+        for (const { target } of entries) {
+          const frame = target.querySelector<HTMLIFrameElement>('iframe');
+          if (frame) frame.style.transform = `scale(${target.clientWidth / VIEWPORT_WIDTH})`;
+        }
+      });
+      document.querySelectorAll('.frame').forEach((frame) => fit.observe(frame));
+      const phaseOf = (frame: HTMLIFrameElement | null): string => frame?.contentDocument?.documentElement.dataset.phase ?? 'loading';
+
+      for (const { select, frame, link, phase } of panes) {
+        if (!select || !frame || !link || !phase) continue;
+        select.addEventListener('change', () => {
+          frame.src = link.href = `${base}${select.value}`;
+        });
+        // Mirror each frame's phase beside its selector.
+        frame.addEventListener('load', () => {
+          const root = frame.contentDocument?.documentElement;
+          if (!root) return;
+          const show = (): void => { phase.textContent = root.dataset.phase ?? ''; };
+          new MutationObserver(show).observe(root, { attributes: true, attributeFilter: ['data-phase'] });
+          show();
+        });
+      }
+
+      document.querySelector('[data-open-both]')?.addEventListener('click', () => {
+        if (!message) return;
+        if (!panes.every(({ frame }) => phaseOf(frame) === 'idle')) {
+          message.textContent = 'Both archives must be ready and closed. Reload both to replay.';
+          return;
+        }
+        // Same task, so both entrances start on the same frame.
+        for (const { frame } of panes) frame?.contentDocument?.querySelector<HTMLButtonElement>('[data-action="open"]')?.click();
+        message.textContent = 'Opening both.';
+      });
+      document.querySelector('[data-reload-both]')?.addEventListener('click', () => {
+        for (const { frame } of panes) frame?.contentWindow?.location.reload();
+        if (message) message.textContent = '';
+      });
+    </script>
+    <style>
+      :root { color-scheme: light; font-family: system-ui, sans-serif; color: oklch(0.25 0 0); background: oklch(0.96 0 0); line-height: 1.5; }
+      body { margin: 0; padding: 1rem; }
+      header { max-width: 120rem; margin: 0 auto 1rem; }
+      h1 { font-size: 1.5rem; margin: 0 0 0.25rem; }
+      header > p { margin: 0 0 0.75rem; max-width: 65ch; color: oklch(0.36 0 0); }
+      .controls { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem; }
+      .message { margin: 0; color: oklch(0.36 0 0); }
+      button, select { font: inherit; min-height: 2.75rem; padding: 0.5rem 1rem; border: 1px solid oklch(0.3 0 0); border-radius: 0.5rem; background: oklch(0.99 0 0); color: inherit; }
+      button { cursor: pointer; }
+      :focus-visible { outline: 3px solid oklch(0.25 0 0); outline-offset: 3px; }
+      main { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 32rem), 1fr)); gap: 1rem; max-width: 120rem; margin: 0 auto; }
+      .pane-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 0.75rem; margin-bottom: 0.5rem; }
+      .pane-bar label { font-weight: 600; }
+      .pane-bar select { flex: 1 1 16rem; min-width: 0; }
+      .phase { color: oklch(0.36 0 0); font-variant-numeric: tabular-nums; }
+      /* V3's 16:10 frame, so neither page widens its field of view for a narrow aspect. */
+      .frame { aspect-ratio: 16 / 10; overflow: hidden; border: 1px solid oklch(0.8 0 0); background: oklch(0.9 0 0); }
+      iframe { display: block; width: 1280px; height: 800px; border: 0; transform-origin: 0 0; }
+    </style>
+  </body>
+</html>

@@ -23,6 +23,8 @@ import '../styles/global.css';
         };
         root.dataset.phase = scene ? 'loading' : 'reading';
         root.dataset.surface = scene ? 'scene' : 'flat';
+        // Entrance appearance study: `?look=pale` keeps the Wave 1B surround.
+        root.dataset.look = new URLSearchParams(location.search).get('look') === 'pale' ? 'pale' : 'charcoal';
         // Direct access must not wait for the module, which may still be
         // downloading (and delaying DOMContentLoaded). The module adopts this choice.
         document.addEventListener('click', (event) => {

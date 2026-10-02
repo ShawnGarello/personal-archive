@@ -72,6 +72,16 @@ Browser review found that enlarged text and 200% zoom shrank the reading page to
 
 The audit found that the inline script paged the documents before the module's navigation existed, so a stalled module download after direct access or with reduced motion left the second document unreachable. Paging now starts only when the booted module adds working controls, on the document the reader is already using. Before that every document is shown in order. The extended and new download tests fail on the audited commit and pass now; the [Wave 1C record](reviews/wave-1c.md) has details.
 
+## Cabinet entrance study - 2026-09-30
+
+Created `experiment/cabinet-entrance` in an isolated worktree from merged main (`4c13a40`, containing Wave 1C) to refine the cabinet entrance before Phase 2. The camera now reaches the cabinet 25% sooner on a shared eased clock that returns to V3's pace before the folder rotates. The mouse turns the idle cabinet slightly, and the approach releases that angle without a snap. The entrance takes place on a charcoal stage with a soft spotlight and a pool of light, then cross-fades to the unchanged pale reading view as the cover opens. Each change can be switched off with a study parameter. A local page at `/compare/` plays two variants side by side.
+
+Browser review found a stage that rendered nothing but its backdrop: an unlit light's shadow map had never been created, and WebGL rejects draws that sample it. It also found a backdrop blend that turned grey too early, and comparison frames too small for the paper reading surface. All three are fixed. Mutation probes showed two new tests too weak (touch input, reading equivalence); both were tightened. Current main is reproduced pixel for pixel with the study switched off, and 44 browser tests pass with a GPU and with software WebGL. See the [entrance study record](reviews/entrance-study.md). The next step is owner review of the comparison; the branch is unpushed for audit.
+
+## Entrance study contrast fix - 2026-09-30
+
+Review found that the entrance text lost contrast during the backdrop cross-fade. The chrome switched colours at a single midpoint while the backdrop faded continuously. On phones the header also crossed the lit cabinet, and the tests checked only the two ends of the fade. Entrance text no longer depends on the backdrop. The header is hidden during the entrance, and the status and skip control carry their own dark surfaces. Focus rings are two-tone. New desktop and phone tests measure every frame of the fade. They fail against the previous chrome, which measured as low as 2.3:1, and pass with the fix (at least 10.2:1 for text). The pale comparison look is unchanged.
+
 ## Format for future milestones
 
 - Objective: what we wanted to learn or deliver.
